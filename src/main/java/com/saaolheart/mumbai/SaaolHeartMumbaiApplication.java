@@ -8,7 +8,7 @@ public class SaaolHeartMumbaiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SaaolHeartMumbaiApplication.class, args);
-	}
+	}		
 
 }
 

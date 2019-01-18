@@ -1,4 +1,4 @@
-package com.saaolheart.mumbai.domain.security;
+package com.saaolheart.mumbai.security.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

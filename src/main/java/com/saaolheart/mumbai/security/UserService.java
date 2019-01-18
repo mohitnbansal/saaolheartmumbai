@@ -1,11 +1,14 @@
-package com.saaolheart.mumbai.service.service;
+package com.saaolheart.mumbai.security;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.saaolheart.mumbai.domain.security.Role;
-import com.saaolheart.mumbai.domain.security.User;
-import com.saaolheart.mumbai.repository.security.UserRepository;
-
+import com.saaolheart.mumbai.security.domain.User;
 /**
  * Created by ala on 17.5.16.
  */
@@ -24,9 +24,11 @@ import com.saaolheart.mumbai.repository.security.UserRepository;
 @Service(value = "userService")
 public class UserService implements UserDetailsService {
 	
-	
+	Logger logger = LoggerFactory.getLogger(UserService.class);
+	 
 	@Autowired
-	private UserRepository userDao;
+	@Qualifier("userRepository")
+	private IUserRepository userDao;
 
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -35,10 +37,11 @@ public class UserService implements UserDetailsService {
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
 		 Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-	        for(Role role: user.getRoles()){
-	            authorities.add(new SimpleGrantedAuthority(role.getDescription().toString()));
+	        //user.getRoles().forEach(role->{authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName().toString()));
+	        user.getRoles().forEach(role->{authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+	        });
 	            
-	        }
+	        
 	        UserDetails userDetails = new org.springframework.security.core.userdetails.
 	                User(user.getUsername(), user.getPassword(), authorities);
 		return userDetails;

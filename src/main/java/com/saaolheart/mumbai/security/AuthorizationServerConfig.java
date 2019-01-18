@@ -21,8 +21,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-import com.saaolheart.mumbai.service.service.UserService;
-
 
 
 
@@ -101,8 +99,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             .withClient(clientId)
             .secret(encoder().encode(clientSecret))
             .authorizedGrantTypes(grantType)
-           // .authorities("ROLE_USER")
-            .scopes(scopeRead, scopeWrite).accessTokenValiditySeconds(500)
+           // .authorities("ROLE_ADMIN","ROLE_STANDARD")
+            .scopes(scopeRead, scopeWrite).accessTokenValiditySeconds(1000)
             .resourceIds(resourceIds).refreshTokenValiditySeconds(Integer.MAX_VALUE);
 	        
 	    }

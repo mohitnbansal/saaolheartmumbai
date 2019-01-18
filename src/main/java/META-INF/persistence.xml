@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="default">
-	<class>com.saaolheart.mumbai.domain.security.Role</class>
-	<class>com.saaolheart.mumbai.domain.security.User</class>
+	<class>com.saaolheart.mumbai.security.domain.Role</class>
+	<class>com.saaolheart.mumbai.security.domain.User</class>
+	<class>com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationDomain</class>
+	
+	<class>com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailsDomain</class>
+	<class>com.saaolheart.mumbai.invoice.InvoiceDomain</class>
+	<class>com.saaolheart.mumbai.invoice.InvoiceRecieptDetailDomain</class>
+		<class>com.saaolheart.mumbai.customer.CustomerDetail</class>
+		<class>com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain</class>
+		<class>com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster</class>
+		<class>com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain</class>
+		<class>com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain</class>
+
 	</persistence-unit>
 </persistence>

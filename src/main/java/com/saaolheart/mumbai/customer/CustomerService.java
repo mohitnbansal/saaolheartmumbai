@@ -11,7 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.saaolheart.mumbai.invoice.InvoiceDomain;
+import com.saaolheart.mumbai.invoice.InvoiceRepository;
 import com.saaolheart.mumbai.security.UserService;
+import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailRepo;
+import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailsDomain;
+import com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationDomain;
+import com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationRepository;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailsRepo;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanRepository;
 
 
 
@@ -22,6 +32,21 @@ public class CustomerService {
 	
 	@Autowired
 	private CustomerRepository custRepo;
+	
+	@Autowired
+	private DoctorConsultationRepository docRepo;
+	
+	@Autowired
+	private InvoiceRepository invoiceRepo;
+	
+	@Autowired
+	private CtAngioDetailRepo ctAngioRepo;
+	
+	@Autowired
+	private TreatmentPlanRepository treatmentRepo;
+	
+	@Autowired
+	private TreatmentPlanDetailsRepo treatmentPlanDetailRepo;
 	
 	public List<CustomerDetail> findCustomerByPhoneNo(Long mobileNo) {
 		Optional<List<CustomerDetail>> custOption = Optional.of(new ArrayList<CustomerDetail>());
@@ -71,4 +96,81 @@ public class CustomerService {
 		return custOption.orElse(null);
 	}
 	
+	/**
+	 * 
+	 * Methods Related to Doctor Consultation Domain
+	 */
+	
+	public DoctorConsultationDomain saveDoctorDetails(DoctorConsultationDomain customer) {
+		DoctorConsultationDomain customerDe = new DoctorConsultationDomain();
+		try {
+			customerDe = docRepo.save(customer);
+		}catch(Exception e) {
+			logger.error("Doctor details for cutomer id "+customer.getCustomerId()+" could not be saved and something went wrong",e);			
+		}
+		return customerDe;
+	}
+
+	public InvoiceDomain findInvoiceDomainById(Long id) {
+		
+		Optional<InvoiceDomain> invFrDb = Optional.of(new InvoiceDomain());
+		try {
+			invFrDb = invoiceRepo.findById(id);
+		}catch(Exception e) {
+			logger.error("Invoice details for invoice id "+id+" could not find and something went wrong",e);			
+		}
+		return invFrDb.orElse(null);
+	}
+  
+	public InvoiceDomain saveinvoiceDomain(InvoiceDomain inv) {
+		InvoiceDomain invFrDb = null;
+		try {
+			invFrDb = invoiceRepo.save(inv);
+		}catch(Exception e) {
+			logger.error("Invoice details for invoice id "+inv.getId()+" could not find and something went wrong",e);			
+		}
+		return invFrDb;
+	}
+
+	public CtAngioDetailsDomain saveCtAngioDetails(CtAngioDetailsDomain ctAngioDetails) {
+		CtAngioDetailsDomain customerDe = new CtAngioDetailsDomain();
+	try {
+		customerDe = ctAngioRepo.save(ctAngioDetails);
+	}catch(Exception e) {
+		logger.error("Ct Angio details for cutomer id "+ctAngioDetails.getCustomerId()+" could not be saved and something went wrong",e);			
+	}
+	return customerDe;
+	}
+
+	public TreatmentPlanDomain saveTreatmentPlan(TreatmentPlanDomain treatmentdetails) {
+		TreatmentPlanDomain customerDe = new TreatmentPlanDomain();
+		try {
+			customerDe = treatmentRepo.save(treatmentdetails);
+		}catch(Exception e) {
+			logger.error("Treatment details for cutomer id "+treatmentdetails.getCustomerId()+" could not be saved and something went wrong",e);			
+		}
+		return customerDe;
+	}
+	
+	public TreatmentPlanDetailDomain saveTreatmentPlanDetails(TreatmentPlanDetailDomain  treatmentdetails) {
+		TreatmentPlanDetailDomain customerDe = new TreatmentPlanDetailDomain();
+		try {
+			customerDe = treatmentPlanDetailRepo.save(treatmentdetails);
+		}catch(Exception e) {
+			logger.error("Treatment Plan details for Treatment id "+treatmentdetails.getTreatmentPlanId()+" could not be saved and something went wrong",e);			
+		}
+		return customerDe;
+		}
+	
+	public TreatmentPlanDomain findTreatmentPlanById(Long id) {
+		Optional<TreatmentPlanDomain> treatmentDomain = Optional.of(new  TreatmentPlanDomain());
+		try {
+			treatmentDomain = treatmentRepo.findById(id);
+		}
+		catch(Exception e) {
+			logger.error("Treatment Plan details for Treatment id "+id+" could not be saved and something went wrong",e);			
+				
+		}
+		return treatmentDomain.orElseGet(null);
+	}
 }

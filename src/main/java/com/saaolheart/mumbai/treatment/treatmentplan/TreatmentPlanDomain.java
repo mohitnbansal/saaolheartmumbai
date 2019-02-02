@@ -1,6 +1,7 @@
 package com.saaolheart.mumbai.treatment.treatmentplan;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -12,8 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain;
 
 @Entity
@@ -34,6 +38,9 @@ public class TreatmentPlanDomain implements Serializable{
 	@Column(name="TREATMENT_TYPE_MASTER_ID")
 	private Long treatmentTypeMasterId;
 	
+	@Column(name="TREATMENT_INV_DATE")
+	private Date treatmentInvoiceDate;
+	
 	
 	@ManyToOne
 	@JoinColumn(name="TREATMENT_TYPE_MASTER_ID",referencedColumnName="ID",insertable=false,updatable=false)
@@ -47,14 +54,59 @@ public class TreatmentPlanDomain implements Serializable{
 	private List<TreatmentPlanDetailDomain> treatmentPlanDetailsList;
 	
 
+	@OneToOne(cascade = {CascadeType.ALL})
+	@JoinColumn(name="INVOICE_ID",referencedColumnName="ID")
+	private InvoiceDomain invoiceDomain;
+	
 	@Column(name="CUSTOMER_ID")
-	private Long customerId;
+	private Long customerId;	
+	
+
+
+
+	@Transient
+	private Double invoiceTotalamt;
+
+	
+	@Transient
+	private Long invoiceMasterTypeId;
 	
 	
 	
-	
+	public Date getTreatmentInvoiceDate() {
+		return treatmentInvoiceDate;
+	}
+
+	public void setTreatmentInvoiceDate(Date treatmentInvoiceDate) {
+		this.treatmentInvoiceDate = treatmentInvoiceDate;
+	}
+
+	public Double getInvoiceTotalamt() {
+		return invoiceTotalamt;
+	}
+
+	public void setInvoiceTotalamt(Double invoiceTotalamt) {
+		this.invoiceTotalamt = invoiceTotalamt;
+	}
+
+	public Long getInvoiceMasterTypeId() {
+		return invoiceMasterTypeId;
+	}
+
+	public void setInvoiceMasterTypeId(Long invoiceMasterTypeId) {
+		this.invoiceMasterTypeId = invoiceMasterTypeId;
+	}
+
 	public Long getTreatmentTypeMasterId() {
 		return treatmentTypeMasterId;
+	}
+
+	public InvoiceDomain getInvoiceDomain() {
+		return invoiceDomain;
+	}
+
+	public void setInvoiceDomain(InvoiceDomain invoiceDomain) {
+		this.invoiceDomain = invoiceDomain;
 	}
 
 	public void setTreatmentTypeMasterId(Long treatmentTypeMasterId) {

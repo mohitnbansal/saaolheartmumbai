@@ -1,8 +1,10 @@
 package com.saaolheart.mumbai.treatment.ctangiography;
 
+
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,8 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 
 /**
@@ -44,9 +46,9 @@ public class CtAngioDetailsDomain implements Serializable{
 	
 	
 
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name="INVOICE_ID",referencedColumnName="ID")
-	private InvoiceDomain invoice;
+	private InvoiceDomain invoiceDomain;
 	
 	@Column(name="ADD_LINE_1")
 	private String addLine1;
@@ -57,14 +59,64 @@ public class CtAngioDetailsDomain implements Serializable{
 	@Column(name="PINCODE")
 	private String pincode;
 	
+
+	@Column(name="CITY")
+	private String city;	
+	
+
+	@Column(name="CONTACT_NO")
+	private Long contactNo;	
+		
 	@Column(name="LANDMARK")
 	private String landmark;	
 	
 	@Column(name="CUSTOMER_ID")
 	private Long customerId;
 	
+	@Transient
+	private Long invoiceMasterTypeId;
+
+	@Transient
+	private Double invoiceTotalamt;
+	
+	
+	
+
+	public Double getInvoiceTotalamt() {
+		return invoiceTotalamt;
+	}
+
+	public void setInvoiceTotalamt(Double invoiceTotalamt) {
+		this.invoiceTotalamt = invoiceTotalamt;
+	}
 
 	
+
+	public Long getContactNo() {
+		return contactNo;
+	}
+
+	public void setContactNo(Long contactNo) {
+		this.contactNo = contactNo;
+	}
+
+	public Long getInvoiceMasterTypeId() {
+		return invoiceMasterTypeId;
+	}
+
+	public void setInvoiceMasterTypeId(Long invoiceMasterTypeId) {
+		this.invoiceMasterTypeId = invoiceMasterTypeId;
+	}
+
+	
+	
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
 
 	public Long getCustomerId() {
 		return customerId;
@@ -109,12 +161,12 @@ public class CtAngioDetailsDomain implements Serializable{
 	
 
 
-	public InvoiceDomain getInvoice() {
-		return invoice;
+	public InvoiceDomain getInvoiceDomain() {
+		return invoiceDomain;
 	}
 
-	public void setInvoice(InvoiceDomain invoice) {
-		this.invoice = invoice;
+	public void setInvoiceDomain(InvoiceDomain invoiceDomain) {
+		this.invoiceDomain = invoiceDomain;
 	}
 
 	public String getAddLine1() {

@@ -22,7 +22,6 @@ public class ErrorControllerExceptionHandler extends ResponseEntityExceptionHand
 	
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<String> entityNotFoundException(Exception ex,WebRequest web){
-		
 		return new ResponseEntity<String>("Unable to find the OutPut",HttpStatus.NOT_FOUND);
 	}
 

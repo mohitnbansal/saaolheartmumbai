@@ -29,7 +29,7 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	private Date treatmentDate;
 	
 	@Column(name="DURATION")
-	private Duration duration;
+	private String duration;
 	
 	@Column(name="BEG_BP")
 	private String begBp;
@@ -65,17 +65,17 @@ public class TreatmentPlanDetailDomain implements Serializable{
 		this.treatmentDate = treatmentDate;
 	}
 
-	public Duration getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Duration duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 
 	public String getBegBp() {
 		return begBp;
-	}
+	}	
 
 	public void setBegBp(String begBp) {
 		this.begBp = begBp;

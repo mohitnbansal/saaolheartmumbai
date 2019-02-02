@@ -89,6 +89,10 @@ public class CustomerDetail implements Serializable {
 	@Column(name="LANDLINE_RES")
 	private String landlineRes;
 	
+
+	@Column(name="PAN_NUMBER")
+	private String panNumber;
+	
 	
 	@Column(name="CONSULTATION_NUMBER")
 	private Long consultaionNumber;
@@ -110,8 +114,7 @@ public class CustomerDetail implements Serializable {
 	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
 	private List<TreatmentPlanDomain> treatmentPlanList;
 	
-	
-	
+
 	@Column(name="STATUS_OF_TREATMENT")
 	private String statusOfTreatment;
 	
@@ -127,6 +130,14 @@ public class CustomerDetail implements Serializable {
 	
 	
 	
+
+	public String getPanNumber() {
+		return panNumber;
+	}
+
+	public void setPanNumber(String panNumber) {
+		this.panNumber = panNumber;
+	}
 
 	public String getGeneretedBy() {
 		return generetedBy;

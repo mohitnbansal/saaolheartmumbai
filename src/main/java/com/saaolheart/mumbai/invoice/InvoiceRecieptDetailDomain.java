@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import com.saaolheart.mumbai.security.domain.User;
 
 @Entity
-@Table(name="INVOICE_RECIEPT_DETAIL")
+@Table(name="INVOICE_RECIEPT_DETAILS")
 public class InvoiceRecieptDetailDomain implements Serializable{
 	
 	/**
@@ -44,22 +44,35 @@ public class InvoiceRecieptDetailDomain implements Serializable{
 	private Date paymentDate;
 	
 	@Column(name="RECIEVED_BY")
-	private Long recievedBy;
+	private String recievedBy;
 	
 	@ManyToOne
-	@JoinColumn(name="RECIEVED_BY",referencedColumnName="ID",insertable=false,updatable=false)
+	@JoinColumn(name="RECIEVED_BY",referencedColumnName="username",insertable=false,updatable=false)
 	private User recievedByUser;
 	
 	@Column(name="IS_EMAILED")
 	private String isEmailed;
 	
-	@Column(name="EMAILED_TO_ID")
+	@Column(name="EMAIL_TO_ID")
 	private String emailedToId;
 
 	@Column(name="REFUND_AMOUNT")
 	private Double refundAmount;
 	
 	
+	@Column(name="PAYMENT_AMOUNT")
+	private Double paymentAmount;
+	
+	
+	
+	public Double getPaymentAmount() {
+		return paymentAmount;
+	}
+
+	public void setPaymentAmount(Double paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
+
 	public Double getRefundAmount() {
 		return refundAmount;
 	}
@@ -116,11 +129,12 @@ public class InvoiceRecieptDetailDomain implements Serializable{
 		this.paymentDate = paymentDate;
 	}
 
-	public Long getRecievedBy() {
+
+	public String getRecievedBy() {
 		return recievedBy;
 	}
 
-	public void setRecievedBy(Long recievedBy) {
+	public void setRecievedBy(String recievedBy) {
 		this.recievedBy = recievedBy;
 	}
 

@@ -14,11 +14,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster;
 import com.saaolheart.mumbai.security.domain.User;
 
+/**
+ * @author mohit
+ *
+ */
 @Entity
 @Table(name="INVOICE")
 public class InvoiceDomain  implements Serializable{
@@ -29,7 +34,7 @@ public class InvoiceDomain  implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Long id;
 	
@@ -39,7 +44,7 @@ public class InvoiceDomain  implements Serializable{
 	
 	@Column(name="INVOICE_TYPE_ID")
 	private Long invoiceTypeId;
-	
+
 	@ManyToOne
 	@JoinColumn(referencedColumnName="ID",name="INVOICE_TYPE_ID",insertable=false,updatable=false)
 	private InvoiceTypeMaster invoiceType;
@@ -57,12 +62,57 @@ public class InvoiceDomain  implements Serializable{
 	private String invoiceStatus;
 	
 	@Column(name="GENERATED_BY")
-	private Long generetedBy;
+	private String generetedByName;
 	
 	@OneToOne
-	@JoinColumn(name="GENERATED_BY",referencedColumnName="ID",insertable=false,updatable=false)
+	@JoinColumn(name="GENERATED_BY",referencedColumnName="username",insertable=false,updatable=false)
 	private User generatedBy;
 
+
+	@Transient
+	private String bankName;
+	
+	@Transient
+	private String referenceNumber;
+	
+	@Transient
+	private Double paymentAmount;
+	
+	@Transient
+	private String paymentMode;
+	
+	
+	public String getPaymentMode() {
+		return paymentMode;
+	}
+
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getReferenceNumber() {
+		return referenceNumber;
+	}
+
+	public void setReferenceNumber(String referenceNumber) {
+		this.referenceNumber = referenceNumber;
+	}
+
+	public Double getPaymentAmount() {
+		return paymentAmount;
+	}
+
+	public void setPaymentAmount(Double paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
 
 	public Long getInvoiceTypeId() {
 		return invoiceTypeId;
@@ -72,12 +122,15 @@ public class InvoiceDomain  implements Serializable{
 		this.invoiceTypeId = invoiceTypeId;
 	}
 
-	public Long getGeneretedBy() {
-		return generetedBy;
+	
+
+
+	public String getGeneretedByName() {
+		return generetedByName;
 	}
 
-	public void setGeneretedBy(Long generetedBy) {
-		this.generetedBy = generetedBy;
+	public void setGeneretedByName(String generetedByName) {
+		this.generetedByName = generetedByName;
 	}
 
 	public Long getId() {

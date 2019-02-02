@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-boot-admin.version>2.1.1</spring-boot-admin.version>
+		<xdocreport.version>1.0.5</xdocreport.version>
 	</properties>
 
 	<dependencies>
@@ -93,6 +94,69 @@
     <artifactId>spring-security-oauth2</artifactId>
     <version>2.2.0.RELEASE</version>
 </dependency>
+<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.core</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.converter</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j</artifactId>
+			<version>2.8.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>xhtmlrenderer</artifactId>
+			<version>1.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.2</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-util</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-1.5-fop</artifactId>
+			<version>0.20-5</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -115,5 +179,11 @@
 			</plugin>
 		</plugins>
 	</build>
+<repositories>
+    <repository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com/</url>
+    </repository>
+</repositories>
 
 </project>

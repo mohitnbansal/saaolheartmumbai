@@ -1,8 +1,10 @@
 package com.saaolheart.mumbai.treatment.doctorconsultation;
 
+
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 
@@ -26,7 +29,7 @@ public class DoctorConsultationDomain implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ID")
+	@Column
 	private Long id;
 	
 	
@@ -45,14 +48,49 @@ public class DoctorConsultationDomain implements Serializable {
 	@Column(name="TYPE_OF_TREATMENT")
 	private String typeOfTreatement;
 
-	@OneToOne
+	
+	@OneToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name="INVOICE_ID",referencedColumnName="ID")
 	private InvoiceDomain invoiceDomain;
 	
 	@Column(name="CUSTOMER_ID")
 	private Long customerId;
 
+
+	@Transient
+	private Double invoiceTotalamt;
+
 	
+	@Transient
+	private Long invoiceMasterTypeId;
+	
+	
+	
+	
+
+	public Long getInvoiceMasterTypeId() {
+		return invoiceMasterTypeId;
+	}
+
+	public void setInvoiceMasterTypeId(Long invoiceMasterTypeId) {
+		this.invoiceMasterTypeId = invoiceMasterTypeId;
+	}
+
+	public Double getInvoiceTotalamt() {
+		return invoiceTotalamt;
+	}
+
+	public void setInvoiceTotalamt(Double invoiceTotalamt) {
+		this.invoiceTotalamt = invoiceTotalamt;
+	}
+
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
 
 	public InvoiceDomain getInvoiceDomain() {
 		return invoiceDomain;

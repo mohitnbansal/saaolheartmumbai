@@ -48,6 +48,8 @@ public class CustomerService {
 	@Autowired
 	private TreatmentPlanDetailsRepo treatmentPlanDetailRepo;
 	
+	
+	
 	public List<CustomerDetail> findCustomerByPhoneNo(Long mobileNo) {
 		Optional<List<CustomerDetail>> custOption = Optional.of(new ArrayList<CustomerDetail>());
 		try {
@@ -83,7 +85,7 @@ public class CustomerService {
 		return custOption.orElse(null);
 	}
 	
-	public CustomerDetail getCustomerDetailById(Long id) {
+	public CustomerDetail findCustomerDetailById(Long id) {
 		
 		Optional<CustomerDetail> custOption = Optional.of(new CustomerDetail());
 		try {
@@ -172,5 +174,25 @@ public class CustomerService {
 				
 		}
 		return treatmentDomain.orElseGet(null);
+	}
+	
+	public List<CustomerDetail> findCustomerByNameOrPhone(String search){
+		Optional<List<CustomerDetail>> customerList = Optional.of(new  ArrayList<CustomerDetail>());
+		Long number = null;
+		try {
+			number = Long.parseLong(search);
+		}catch(NumberFormatException nu) {			
+			logger.error("Search String is a Name");
+			number= 0L;
+		}
+		try {
+			
+			customerList = custRepo.findByFirstNameContaining(search);
+		}
+		catch(Exception e) {
+			logger.error("Could Not Find any customer with search param "+search,e);			
+				
+		}
+		return customerList.orElseGet(null);
 	}
 }

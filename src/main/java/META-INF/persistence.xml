@@ -9,10 +9,19 @@
 	<class>com.saaolheart.mumbai.invoice.InvoiceDomain</class>
 	<class>com.saaolheart.mumbai.invoice.InvoiceRecieptDetailDomain</class>
 		<class>com.saaolheart.mumbai.customer.CustomerDetail</class>
+		<class>com.saaolheart.mumbai.customer.CustomerAppointmentDomain</class>
 		<class>com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain</class>
 		<class>com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster</class>
 		<class>com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain</class>
 		<class>com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain</class>
+		
+		<class>com.saaolheart.mumbai.store.stock.StockDomain</class>
+		<class>com.saaolheart.mumbai.store.stock.StockCategoryDomain</class>
+	<class>com.saaolheart.mumbai.store.stock.StockHistoryDetailsDomain</class>
+	
+	
+	<class>com.saaolheart.mumbai.store.customersales.CustomerSalesDomain</class>
+	<class>com.saaolheart.mumbai.store.customersales.CustomerPurchasesDomain</class>
 
 	</persistence-unit>
 </persistence>

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saaolheart.mumbai.common.response.ActionResponse;
@@ -79,8 +80,9 @@ public class CustomerController {
 	public ResponseEntity<ActionResponse<CustomerDetail>> saveCustomer(/* @Valid */ @RequestBody CustomerDetail customer,
 			HttpServletRequest request,Principal user,
 			BindingResult result,HttpServletResponse response){
-ActionResponse<CustomerDetail> actionResponse = new ActionResponse<CustomerDetail>();
-MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+			
+		ActionResponse<CustomerDetail> actionResponse = new ActionResponse<CustomerDetail>();
+		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 		List<CustomerDetail> custDb = null;
 		
 		/**
@@ -122,7 +124,7 @@ MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 			HttpServletResponse response){
 		
 		CustomerDetail cust = new CustomerDetail();
-		cust = customerService.getCustomerDetailById(id);
+		cust = customerService.findCustomerDetailById(id);
 		if(cust != null && cust.getId()!=null) {
 			return new ResponseEntity<CustomerDetail>(cust,HttpStatus.OK);
 		}else {
@@ -265,7 +267,7 @@ MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 					mergedOutput =	  PdfGenerator
 							.mergeAndGeneratePDFOutput
 							(templatePath,
-							TemplateEngineKind.Freemarker,
+							TemplateEngineKind.Velocity,
 							nonImageVariableMap,
 							null);
 				} catch (IOException | XDocReportException | Docx4JException e) {
@@ -445,4 +447,22 @@ MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 		
 	}
 	
+/**
+ * 
+ * @param searchParam
+ * @param request
+ * @param user
+ * @param response
+ * @return
+ */
+	/*
+	 * This methods need to be improved as this method needs to be capable of searching by name and phone number , repo query need to 
+	 * be implemented.
+	 */
+	@GetMapping(value="/getcustomerbysearch")
+	public ResponseEntity<List<CustomerDetail>> getCustomerDetailsBySearchParam(@RequestParam("searchParam") String searchParam,
+			HttpServletRequest request,Principal user,
+			HttpServletResponse response){
+	return  new ResponseEntity<>(customerService.findCustomerByNameOrPhone(searchParam),HttpStatus.OK);
+	}
 }

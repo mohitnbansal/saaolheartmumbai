@@ -1,6 +1,7 @@
 package com.saaolheart.mumbai.customer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,12 +17,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.saaolheart.mumbai.security.domain.User;
+import com.saaolheart.mumbai.store.customersales.CustomerSalesDomain;
 import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailsDomain;
 import com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
 
+/**
+ * @author mohit
+ *
+ */
 @Entity
 @Table(name="CUSTOMER_DETAILS")
 public class CustomerDetail implements Serializable {
@@ -31,6 +39,9 @@ public class CustomerDetail implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public  CustomerDetail() {
+		this.customerAppointmentList = new ArrayList<CustomerAppointmentDomain>();
+	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
@@ -102,18 +113,43 @@ public class CustomerDetail implements Serializable {
 	
 	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
 	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
+	@Fetch(value=FetchMode.SELECT)
 	private List<CtAngioDetailsDomain> ctAngioDetailList;
 	
 
 	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
 	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
+	@Fetch(value=FetchMode.SELECT)
 	private List<DoctorConsultationDomain> doctorConsultationList;
 	
 
 	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
 	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
+	@Fetch(value=FetchMode.SELECT)
 	private List<TreatmentPlanDomain> treatmentPlanList;
 	
+	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
+	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
+	@Fetch(value=FetchMode.SELECT)
+	private List<CustomerSalesDomain> customerSalesList;
+	
+	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
+	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_ID")
+	@Fetch(value=FetchMode.SELECT)
+	private List<CustomerAppointmentDomain> customerAppointmentList;
+	
+	
+	
+
+	public List<CustomerAppointmentDomain> getCustomerAppointmentList() {
+		return customerAppointmentList;
+	}
+
+	public void setCustomerAppointmentList(List<CustomerAppointmentDomain> customerAppointmentList) {
+		this.customerAppointmentList.clear();
+		this.customerAppointmentList.addAll(customerAppointmentList);
+		//this.customerAppointmentList = customerAppointmentList;
+	}
 
 	@Column(name="STATUS_OF_TREATMENT")
 	private String statusOfTreatment;
@@ -130,6 +166,16 @@ public class CustomerDetail implements Serializable {
 	
 	
 	
+
+	public List<CustomerSalesDomain> getCustomerSalesList() {
+		return customerSalesList;
+	}
+
+	public void setCustomerSalesList(List<CustomerSalesDomain> customerSalesList) {
+		this.customerSalesList.clear();
+		this.customerSalesList.addAll(customerSalesList);
+		//this.customerSalesList = customerSalesList;
+	}
 
 	public String getPanNumber() {
 		return panNumber;

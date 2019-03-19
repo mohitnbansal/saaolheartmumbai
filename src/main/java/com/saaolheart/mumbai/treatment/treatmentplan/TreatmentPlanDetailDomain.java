@@ -29,7 +29,7 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	private Date treatmentDate;
 	
 	@Column(name="DURATION")
-	private String duration;
+	private Duration duration;
 	
 	@Column(name="BEG_BP")
 	private String begBp;
@@ -46,8 +46,24 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	@Column(name="COMPLAINTS")
 	private String complaints;
 	
+
+
+	@Column(name="MACHINE_NO")
+	private Integer machineNo;
+	
 	@Column(name="TREATMENT_PLAN_ID")
 	private Long treatmentPlanId;
+
+	
+	
+
+	public Integer getMachineNo() {
+		return machineNo;
+	}
+
+	public void setMachineNo(Integer machineNo) {
+		this.machineNo = machineNo;
+	}
 
 	public Long getId() {
 		return id;
@@ -65,11 +81,13 @@ public class TreatmentPlanDetailDomain implements Serializable{
 		this.treatmentDate = treatmentDate;
 	}
 
-	public String getDuration() {
+
+
+	public Duration getDuration() {
 		return duration;
 	}
 
-	public void setDuration(String duration) {
+	public void setDuration(Duration duration) {
 		this.duration = duration;
 	}
 

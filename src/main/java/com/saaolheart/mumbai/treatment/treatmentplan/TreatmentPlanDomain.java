@@ -1,6 +1,7 @@
 package com.saaolheart.mumbai.treatment.treatmentplan;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +59,12 @@ public class TreatmentPlanDomain implements Serializable{
 	@JoinColumn(name="INVOICE_ID",referencedColumnName="ID")
 	private InvoiceDomain invoiceDomain;
 	
+	@Column(name="NO_SITTINGS")
+	private Integer noOfSittings;
+	
+	@Column(name="TOTAL_DURATION")
+	private Duration time;
+	
 	@Column(name="CUSTOMER_ID")
 	private Long customerId;	
 	
@@ -73,6 +80,22 @@ public class TreatmentPlanDomain implements Serializable{
 	
 	
 	
+	public Integer getNoOfSittings() {
+		return noOfSittings;
+	}
+
+	public void setNoOfSittings(Integer noOfSittings) {
+		this.noOfSittings = noOfSittings;
+	}
+
+	public Duration getTime() {
+		return time;
+	}
+
+	public void setTime(Duration time) {
+		this.time = time;
+	}
+
 	public Date getTreatmentInvoiceDate() {
 		return treatmentInvoiceDate;
 	}

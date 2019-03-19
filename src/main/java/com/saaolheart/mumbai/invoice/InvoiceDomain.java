@@ -1,6 +1,7 @@
 package com.saaolheart.mumbai.invoice;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -32,7 +33,9 @@ public class InvoiceDomain  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+ public  InvoiceDomain() {
+	this.invoiceReciptList = new ArrayList<InvoiceRecieptDetailDomain>();
+}
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
@@ -64,6 +67,13 @@ public class InvoiceDomain  implements Serializable{
 	@Column(name="GENERATED_BY")
 	private String generetedByName;
 	
+	@Column(name="CUSTOMER_ID")
+	private Long customerId;
+	
+	
+	@Transient
+	private CustomerDetail customerDetail;
+	
 	@OneToOne
 	@JoinColumn(name="GENERATED_BY",referencedColumnName="username",insertable=false,updatable=false)
 	private User generatedBy;
@@ -82,6 +92,23 @@ public class InvoiceDomain  implements Serializable{
 	private String paymentMode;
 	
 	
+	
+	public CustomerDetail getCustomerDetail() {
+		return customerDetail;
+	}
+
+	public void setCustomerDetail(CustomerDetail customerDetail) {
+		this.customerDetail = customerDetail;
+	}
+
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
 	public String getPaymentMode() {
 		return paymentMode;
 	}
@@ -147,7 +174,9 @@ public class InvoiceDomain  implements Serializable{
 	}
 
 	public void setInvoiceReciptList(List<InvoiceRecieptDetailDomain> invoiceReciptList) {
-		this.invoiceReciptList = invoiceReciptList;
+		this.invoiceReciptList.clear();
+		this.invoiceReciptList.addAll(invoiceReciptList);
+//		this.invoiceReciptList = invoiceReciptList;
 	}
 
 	public InvoiceTypeMaster getInvoiceType() {

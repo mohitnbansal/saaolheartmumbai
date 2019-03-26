@@ -3,7 +3,7 @@ package com.saaolheart.mumbai.customer;
 public enum VisitngFor {
 	PRODUCT("Product"),
 	ECP("ECP"),
-	PCA("PCA");
+	BCA("BCA");
 
 	public String visit;
 	VisitngFor(String val) {

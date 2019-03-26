@@ -14,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 
@@ -34,9 +36,14 @@ public class CustomerAppointmentDomain  implements Serializable {
 	@Column(name="EXPECTED_TIME")
 	private Date expectedTime;
 	
+	
 	@Column(name="DT_OF_SCHEDULE")
 	private Date dateOfScheduling;
 	
+	@Transient
+	private String dateOfSchedulingForDisplay;
+	
+
 	@Column(name="VISIT_NUMBER")
 	private Integer visitNumber;
 	
@@ -65,19 +72,120 @@ public class CustomerAppointmentDomain  implements Serializable {
 	@Column(name="POST_DESCRIPTION")
 	private String postScheduleDescription;
 	
+	@Column(name="TREATMENT_PLAN_ID")
+	private Long treatmentPlanId;
+	
+	@Column(name="TREATMENT_PLAN_DETAIL_ID")
+	private Long treatmentDetailPlanId;
+	
+	@Column(name="TIME_IN_DURATION")
+	private Duration timeInDuration;
+	
+	@Transient
+	private String customerName;
+	
+	
 	@Transient
 	private String typeOfAppointmentString;
 
 	@Transient
 	private Duration durationOfTreatment;
 	
-	@Transient
+	@Column(name="MACHINE_NO")
 	private Integer machineNo;
 	
-	
-	
-	
-	
+@Transient
+private Integer duration;
+
+@Transient
+private Date start;
+
+@Transient
+private Date end;
+
+
+
+	public Duration getTimeInDuration() {
+	return timeInDuration;
+}
+
+
+public void setTimeInDuration(Duration timeInDuration) {
+	this.timeInDuration = timeInDuration;
+}
+
+
+	public Integer getDuration() {
+	return duration;
+}
+
+
+public void setDuration(Integer duration) {
+	this.duration = duration;
+}
+
+
+public Date getStart() {
+	return start;
+}
+
+
+public void setStart(Date start) {
+	this.start = start;
+}
+
+
+public Date getEnd() {
+	return end;
+}
+
+
+public void setEnd(Date end) {
+	this.end = end;
+}
+
+
+	public String getDateOfSchedulingForDisplay() {
+		return dateOfSchedulingForDisplay;
+	}
+
+
+	public void setDateOfSchedulingForDisplay(String dateOfSchedulingForDisplay) {
+		this.dateOfSchedulingForDisplay = dateOfSchedulingForDisplay;
+	}
+
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+
+	public Long getTreatmentDetailPlanId() {
+		return treatmentDetailPlanId;
+	}
+
+
+	public void setTreatmentDetailPlanId(Long treatmentDetailPlanId) {
+		this.treatmentDetailPlanId = treatmentDetailPlanId;
+	}
+
+
+	public Long getTreatmentPlanId() {
+		return treatmentPlanId;
+	}
+
+
+	public void setTreatmentPlanId(Long treatmentPlanId) {
+		this.treatmentPlanId = treatmentPlanId;
+	}
+
+
+
 
 	public String getPostScheduleDescription() {
 		return postScheduleDescription;

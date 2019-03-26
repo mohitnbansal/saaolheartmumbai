@@ -1,18 +1,17 @@
 package com.saaolheart.mumbai.dashboard;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.saaolheart.mumbai.customer.AppointmentStatusesConstants;
+import com.saaolheart.mumbai.common.utility.Constants;
+import com.saaolheart.mumbai.customer.AppointmentConstants;
 import com.saaolheart.mumbai.customer.AppointmentType;
 import com.saaolheart.mumbai.customer.CustomerAppointmentDomain;
 import com.saaolheart.mumbai.customer.CustomerAppointmentRepo;
@@ -20,6 +19,11 @@ import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.customer.CustomerRepository;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.invoice.InvoiceRepository;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailsRepo;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanRepository;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentStatusConstants;
 
 @Service
 public class DashboardService {
@@ -35,6 +39,12 @@ public class DashboardService {
 	
 	@Autowired
 	private InvoiceRepository invoiceRepo;
+	
+	@Autowired
+	private TreatmentPlanDetailsRepo treatmentDetailPlanRepo;
+	
+	@Autowired
+	private TreatmentPlanRepository treatmentPlanRepo;
 	
 	
 	public CustomerAppointmentDomain findAppontmentDetailById(Long id) {
@@ -99,16 +109,79 @@ public class DashboardService {
 		 */
 		return list.orElse(null);
 	}
-
-	public List<CustomerAppointmentDomain> getAppointmentPendingList() {
+		public List<CustomerAppointmentDomain> getAppointmentPendingList(List<AppointmentType> appointmentType) {
 		
 		Optional<List<CustomerAppointmentDomain>> customerAppointmentList = Optional.of(new ArrayList<CustomerAppointmentDomain>());
 		try {
-		customerAppointmentList = appointmentRepo.findByIsVisitDoneIgnoreCase(AppointmentStatusesConstants.PENDING);
+			
+			customerAppointmentList = appointmentRepo.findByIsVisitDoneIgnoreCaseAndTypeOfAppointmentIn(AppointmentConstants.PENDING, appointmentType);
 		}
 		catch(Exception e) {
 			logger.error("Customer Appointment List unable to fetch");
 		}
 		return customerAppointmentList.orElse(null);
 	}
+
+		public TreatmentPlanDetailDomain findTreatmentDetailPlanById(Long treatmentPlanDetailId) {
+			Optional<TreatmentPlanDetailDomain> treatmenPlanDetail = Optional.of(new TreatmentPlanDetailDomain());
+			
+			try {
+				treatmenPlanDetail = treatmentDetailPlanRepo.findById(treatmentPlanDetailId);
+			}
+			catch(Exception e) {
+				logger.error("Unable to fetch treamentplan by id"+ treatmentPlanDetailId);
+			}
+			return treatmenPlanDetail.orElse(null); 
+			
+		}
+
+		public TreatmentPlanDomain findTreatmentPlanById(Long treatmentId) {
+Optional<TreatmentPlanDomain> treatmenPlan = Optional.of(new TreatmentPlanDomain());
+			
+			try {
+				treatmenPlan = treatmentPlanRepo.findById(treatmentId);
+			}
+			catch(Exception e) {
+				logger.error("Unable to fetch treamentplan by id"+ treatmentId);
+			}
+			return treatmenPlan.orElse(null); 
+		}
+
+		public TreatmentPlanDomain saveTreatmentPlan(TreatmentPlanDomain treatment) {
+			TreatmentPlanDomain treatmenPlan = new TreatmentPlanDomain();
+
+			try {
+				treatmenPlan = treatmentPlanRepo.save(treatment);
+				treatmentPlanRepo.refresh(treatmenPlan);
+			}
+			catch(Exception e) {
+				logger.error("Unable to Save treamentplan for customer by id"+ treatment.getCustomerId());
+			}
+			return treatmenPlan; 
+			
+		}
+
+		public TreatmentPlanDetailDomain saveTreatmentDetailPlan(TreatmentPlanDetailDomain treatmentDetalPlanSave) {
+			TreatmentPlanDetailDomain treatmenPlan = new TreatmentPlanDetailDomain();
+
+			try {
+				treatmenPlan = treatmentDetailPlanRepo.save(treatmentDetalPlanSave);
+			}
+			catch(Exception e) {
+				logger.error("Unable to Save treamentplan for customer by id"+ treatmentDetalPlanSave.getTreatmentPlanId());
+			}
+			return treatmenPlan; 
+		}
+
+		public List<TreatmentPlanDetailDomain> getAllTreatmentPendingForDate(Date appointmentDate) {
+			Optional<List<TreatmentPlanDetailDomain>> treatmentplanList = Optional.of(new ArrayList<TreatmentPlanDetailDomain>());
+
+			try {
+				treatmentplanList  = treatmentDetailPlanRepo.findByIsTreatmentDoneIgnoreCaseAndTreatmentScheduledDateEqualsAndTreatmentType(Constants.PENDING, appointmentDate, AppointmentConstants.ECP_TREATMENT);
+			
+			}catch(Exception e) {
+				
+			}
+			return treatmentplanList.orElse(null);
+		}
 }

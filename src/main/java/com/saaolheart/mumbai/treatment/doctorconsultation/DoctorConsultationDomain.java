@@ -11,11 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
+import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain;
 
 @Entity
 @Table(name="DOCTOR_CONSULTATION")
@@ -46,8 +50,11 @@ public class DoctorConsultationDomain implements Serializable {
 	private String testSuggested;
 	
 	@Column(name="TYPE_OF_TREATMENT")
-	private String typeOfTreatement;
-
+	private Long typeOfTreatement;
+	
+	@ManyToOne
+	@JoinColumn(name="TYPE_OF_TREATMENT",referencedColumnName="ID",insertable=false,updatable=false)
+	private TreatmentTypeMasterDomain typeOfTreatementDomain;
 	
 	@OneToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name="INVOICE_ID",referencedColumnName="ID")
@@ -67,6 +74,14 @@ public class DoctorConsultationDomain implements Serializable {
 	
 	
 	
+
+	public Long getTypeOfTreatement() {
+		return typeOfTreatement;
+	}
+
+	public void setTypeOfTreatement(Long typeOfTreatement) {
+		this.typeOfTreatement = typeOfTreatement;
+	}
 
 	public Long getInvoiceMasterTypeId() {
 		return invoiceMasterTypeId;
@@ -140,13 +155,15 @@ public class DoctorConsultationDomain implements Serializable {
 		this.testSuggested = testSuggested;
 	}
 
-	public String getTypeOfTreatement() {
-		return typeOfTreatement;
+	public TreatmentTypeMasterDomain getTypeOfTreatementDomain() {
+		return typeOfTreatementDomain;
 	}
 
-	public void setTypeOfTreatement(String typeOfTreatement) {
-		this.typeOfTreatement = typeOfTreatement;
+	public void setTypeOfTreatementDomain(TreatmentTypeMasterDomain typeOfTreatementDomain) {
+		this.typeOfTreatementDomain = typeOfTreatementDomain;
 	}
+
+	
 	
 	
 	

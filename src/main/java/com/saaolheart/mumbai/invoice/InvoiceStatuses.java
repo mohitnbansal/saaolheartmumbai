@@ -4,7 +4,7 @@ public enum InvoiceStatuses {
 	
 	NOTPAID("Total Payment Pending"),
 	PARTIALLYPAID("Partially Pending"),
-	PAYMENTDONE("Payement Conpleted"),
+	PAYMENTDONE("Payement Completed"),
 	CANCELLED("Invoice Cancelled");
 	
 	public  String invoiceStatuses;

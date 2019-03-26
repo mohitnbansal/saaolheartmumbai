@@ -8,26 +8,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialException;
 
-import org.docx4j.docProps.variantTypes.Array;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -82,8 +81,9 @@ public class CustomerController {
 			BindingResult result,HttpServletResponse response){
 			
 		ActionResponse<CustomerDetail> actionResponse = new ActionResponse<CustomerDetail>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+	
 		List<CustomerDetail> custDb = null;
+		Set<String> newErrors = new HashSet<String>();
 		
 		/**
 		 * User Validation from DB isUserExist
@@ -91,9 +91,11 @@ public class CustomerController {
 		if(customer!=null && customer.getId()==null) {
 		 custDb = customerService.findCustomerByPhoneNo(customer.getMobileNo());
 		 if(custDb!=null && !custDb.isEmpty()) {
-			 mMap.add("error", "User Already Exist in Database");
+			
+			 newErrors.add("User Already Exist in Database");
 			 actionResponse.setDocument(customer);
-			 return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+			 actionResponse.setError(newErrors);
+			 return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.BAD_REQUEST);
 		 }
 		}
 		customer.setGeneretedBy(user.getName());
@@ -104,10 +106,11 @@ public class CustomerController {
 			customer = customerService.saveCustomer(customer);
 			actionResponse.setDocument(customer);
 			actionResponse.setActionResponse(ActionStatus.SUCCESS);
-			mMap.add("success", "User Created Successfully in Database");
+			 newErrors.add("User Created Successfully in Database");
+			 actionResponse.setError(newErrors);
 		}
 		
-		return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,mMap,HttpStatus.OK);
+		return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.OK);
 		
 	}
 	
@@ -162,6 +165,7 @@ public class CustomerController {
 			
 			doctorDetailsDB = customerService.saveDoctorDetails(doctordetails);
 			if(doctorDetailsDB !=null && doctorDetailsDB.getId()!=null) {
+				
 				actionResponse.setDocument(doctorDetailsDB);
 				actionResponse.setActionResponse(ActionStatus.SUCCESS);
 				mMap.add("success", "Doctor Details Successfully Updated in DB");			
@@ -214,7 +218,10 @@ public class CustomerController {
 			/**
 			 * BUG Status is not getting 
 			 */
-			if(invoiceDomain.getBalanceAmt() > 0 ) {
+			if(invoiceDomain.getBalanceAmt().equals(invRcpt.getPaymentAmount()) ) {
+				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
+			}else if (invoiceDomain.getBalanceAmt().compareTo(invRcpt.getPaymentAmount()) > 0){
+				
 				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.PARTIALLYPAID.getInvoiceStatuses());
 			}else if(invoiceDomain.getInvoiceStatus().equalsIgnoreCase(InvoiceStatuses.CANCELLED.getInvoiceStatuses())){	
 				/**
@@ -355,7 +362,6 @@ public class CustomerController {
 	/**
 	 * Treatment MEthods
 	 */
-	
 	@PostMapping(value="/savetreatmentdetails")
 	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ActionResponse<TreatmentPlanDomain>> saveTreatmentDetails(/* @Valid */ 
@@ -464,5 +470,41 @@ public class CustomerController {
 			HttpServletRequest request,Principal user,
 			HttpServletResponse response){
 	return  new ResponseEntity<>(customerService.findCustomerByNameOrPhone(searchParam),HttpStatus.OK);
+	}
+	
+	@PostMapping(value="/cancelInvoice")
+	public ResponseEntity<ActionResponse<CtAngioDetailsDomain>>  cancelInvoice(/* @Valid */ 
+			@RequestBody CtAngioDetailsDomain ctAngio,
+			HttpServletRequest request,Principal user,
+			BindingResult result,HttpServletResponse response) {
+		CtAngioDetailsDomain ctAngioTotalSaved = null;
+		InvoiceDomain invoiceDomainFromDb = customerService.findInvoiceDomainById(ctAngio.getInvoiceDomain().getId());
+		ActionResponse<CtAngioDetailsDomain> actionResponse = new ActionResponse<CtAngioDetailsDomain>();
+		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+		if(invoiceDomainFromDb!=null)
+		{
+			invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.CANCELLED.getInvoiceStatuses());
+			if(invoiceDomainFromDb.getInvoiceReciptList()!=null && !invoiceDomainFromDb.getInvoiceReciptList().isEmpty()) {
+			for(InvoiceRecieptDetailDomain recpt: invoiceDomainFromDb.getInvoiceReciptList()) {
+				recpt.setRefundAmount(recpt.getPaymentAmount());				
+			}
+		}
+		
+			ctAngio.setInvoiceTotalamt(ctAngio.getInvoiceDomain().getNewInvoiceAmountInCaseofCancel());
+			ctAngio.setRefDate(new Date());
+			ctAngio.setInvoiceDomain(invoiceDomainFromDb);
+			ctAngio.getInvoiceDomain().setBalanceAmt(0D);
+			ctAngio.setId(null);
+			CtAngioDetailsDomain ctAngioFromDb = 	
+					saveCtAngioDetails(ctAngio, request, user, result, response).getBody().getDocument();	
+			ctAngioFromDb.getInvoiceDomain().setPaymentAmount(ctAngio.getInvoiceDomain().getNewInvoiceAmountInCaseofCancel());
+			ctAngioFromDb.getInvoiceDomain().setBalanceAmt(0D);
+			generateRecipt(ctAngioFromDb.getInvoiceDomain(), request, user, result, response);
+			 ctAngioTotalSaved = customerService.findCtAngioDetailsById(ctAngioFromDb.getId());
+		}
+		actionResponse.setDocument(ctAngioTotalSaved);
+		actionResponse.setActionResponse(ActionStatus.SUCCESS);
+		mMap.add("success", "Doctor Details Successfully Updated in DB");			
+	return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,mMap,HttpStatus.OK);
 	}
 }

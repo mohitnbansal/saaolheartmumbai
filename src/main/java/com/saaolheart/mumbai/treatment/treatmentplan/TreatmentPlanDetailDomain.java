@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="TREATMENT_PLAN_DETAILS")
@@ -25,8 +26,6 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	@Column(name="ID")
 	private Long id;
 	
-	@Column(name="TREATMENT_DATE")
-	private Date treatmentDate;
 	
 	@Column(name="DURATION")
 	private Duration duration;
@@ -46,6 +45,8 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	@Column(name="COMPLAINTS")
 	private String complaints;
 	
+	@Column(name="IS_TREATMENT_DONE")
+	private String isTreatmentDone;
 
 
 	@Column(name="MACHINE_NO")
@@ -53,9 +54,59 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	
 	@Column(name="TREATMENT_PLAN_ID")
 	private Long treatmentPlanId;
+/**
+ * Consider as Start date and time
+ */
+	@Column(name="SCHEDULED_DATE")
+	private Date treatmentScheduledDate;
+	
+	/**
+	 * Consider as END date and time
+	 */
+	
+	@Column(name="TREATMENT_DATE")
+	private Date treatmentDate;
+	
+	@Column(name="TREATMENT_TYPE")
+	private String treatmentType;
+	
 
+	public String getTreatmentType() {
+		return treatmentType;
+	}
+
+	public void setTreatmentType(String treatmentType) {
+		this.treatmentType = treatmentType;
+	}
+
+	@Transient
+	private TreatmentPlanDomain treatmentDomain;
 	
 	
+
+	public TreatmentPlanDomain getTreatmentDomain() {
+		return treatmentDomain;
+	}
+
+	public void setTreatmentDomain(TreatmentPlanDomain treatmentDomain) {
+		this.treatmentDomain = treatmentDomain;
+	}
+
+	public Date getTreatmentScheduledDate() {
+		return treatmentScheduledDate;
+	}
+
+	public void setTreatmentScheduledDate(Date treatmentScheduledDate) {
+		this.treatmentScheduledDate = treatmentScheduledDate;
+	}
+
+	public String getIsTreatmentDone() {
+		return isTreatmentDone;
+	}
+
+	public void setIsTreatmentDone(String isTreatmentDone) {
+		this.isTreatmentDone = isTreatmentDone;
+	}
 
 	public Integer getMachineNo() {
 		return machineNo;

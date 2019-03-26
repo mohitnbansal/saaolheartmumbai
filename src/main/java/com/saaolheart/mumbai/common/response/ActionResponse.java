@@ -1,20 +1,23 @@
 package com.saaolheart.mumbai.common.response;
 
+import java.util.Set;
+
 import org.springframework.validation.Errors;
 
 public class ActionResponse<T> {
 	
-	public Errors error;
+	public Set<String> error;
 	
 	public T document;
 	
 	public ActionStatus actionResponse;
 
-	public Errors getError() {
+	
+	public Set<String> getError() {
 		return error;
 	}
 
-	public void setError(Errors error) {
+	public void setError(Set<String> error) {
 		this.error = error;
 	}
 

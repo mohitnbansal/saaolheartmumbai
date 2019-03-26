@@ -5,7 +5,7 @@ public enum AppointmentType {
 	INHOUSE("In House"),
 	DR_APPOINTMENT("Dr Appointment"),
 	TREATMENT_ECP("Treatment ECP"),
-	TREATMENT_BCP("Treatment BCP");
+	TREATMENT_BCA("Treatment BCA");
 	
 	AppointmentType(String str) {
 		this.appointmentString = str;
@@ -26,7 +26,7 @@ public enum AppointmentType {
 		}else if("Treatment ECP".equalsIgnoreCase(app)) {
 			return AppointmentType.TREATMENT_ECP;
 		}else {
-			return AppointmentType.TREATMENT_BCP;
+			return AppointmentType.TREATMENT_BCA;
 		}
 	}
 	

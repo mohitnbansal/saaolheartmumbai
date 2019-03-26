@@ -9,14 +9,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.saaolheart.mumbai.dashboard.DashboardController;
+import com.saaolheart.mumbai.configuration.repositoryconfig.CustomRepositoryImpl;
 
 import fr.opensagres.xdocreport.core.XDocReportException;
 
 
 @SpringBootApplication
 @ComponentScan(basePackages= {"com.saaolheart.mumbai"})
-@EnableJpaRepositories
+@EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
 @EnableAutoConfiguration
 public class SaaolHeartMumbaiApplication {
 

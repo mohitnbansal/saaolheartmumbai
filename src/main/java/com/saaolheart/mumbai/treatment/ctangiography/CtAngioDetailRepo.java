@@ -1,9 +1,10 @@
 package com.saaolheart.mumbai.treatment.ctangiography;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.saaolheart.mumbai.configuration.repositoryconfig.CustomRepository;
+
 @Repository
-public interface CtAngioDetailRepo extends JpaRepository<CtAngioDetailsDomain, Long>{
+public interface CtAngioDetailRepo extends CustomRepository<CtAngioDetailsDomain, Long>{
 
 }

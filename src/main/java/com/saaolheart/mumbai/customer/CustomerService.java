@@ -6,14 +6,20 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.invoice.InvoiceRepository;
-import com.saaolheart.mumbai.security.UserService;
+import com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster;
+import com.saaolheart.mumbai.masters.invoice.InvoiceTypeMasterRepo;
+import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain;
+import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterRepo;
 import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailRepo;
 import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailsDomain;
 import com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationDomain;
@@ -49,6 +55,11 @@ public class CustomerService {
 	private TreatmentPlanDetailsRepo treatmentPlanDetailRepo;
 	
 	
+	@Autowired
+	private TreatmentTypeMasterRepo treatmentTypeMasterRepo;
+	
+	@Autowired
+	private InvoiceTypeMasterRepo invoiceTypeMaster;
 	
 	public List<CustomerDetail> findCustomerByPhoneNo(Long mobileNo) {
 		Optional<List<CustomerDetail>> custOption = Optional.of(new ArrayList<CustomerDetail>());
@@ -102,11 +113,12 @@ public class CustomerService {
 	 * 
 	 * Methods Related to Doctor Consultation Domain
 	 */
-	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public DoctorConsultationDomain saveDoctorDetails(DoctorConsultationDomain customer) {
 		DoctorConsultationDomain customerDe = new DoctorConsultationDomain();
 		try {
 			customerDe = docRepo.save(customer);
+			docRepo.refresh(customerDe);
 		}catch(Exception e) {
 			logger.error("Doctor details for cutomer id "+customer.getCustomerId()+" could not be saved and something went wrong",e);			
 		}
@@ -128,6 +140,7 @@ public class CustomerService {
 		InvoiceDomain invFrDb = null;
 		try {
 			invFrDb = invoiceRepo.save(inv);
+			invoiceRepo.refresh(invFrDb);
 		}catch(Exception e) {
 			logger.error("Invoice details for invoice id "+inv.getId()+" could not find and something went wrong",e);			
 		}
@@ -138,6 +151,7 @@ public class CustomerService {
 		CtAngioDetailsDomain customerDe = new CtAngioDetailsDomain();
 	try {
 		customerDe = ctAngioRepo.save(ctAngioDetails);
+		ctAngioRepo.refresh(customerDe);
 	}catch(Exception e) {
 		logger.error("Ct Angio details for cutomer id "+ctAngioDetails.getCustomerId()+" could not be saved and something went wrong",e);			
 	}
@@ -194,5 +208,47 @@ public class CustomerService {
 				
 		}
 		return customerList.orElseGet(null);
+	}
+
+	public DoctorConsultationDomain findDoctorConsultationDetailsById(Long id) {
+		Optional<DoctorConsultationDomain> customerDe =Optional.of( new DoctorConsultationDomain());
+		try {
+			customerDe = docRepo.findById(id);
+		}catch(Exception e) {
+			logger.error("Doctor details for cutomer id "+id+" could not be saved and something went wrong",e);			
+		}
+		return customerDe.orElse(null);
+		
+	}
+
+	public TreatmentTypeMasterDomain findTreatmentTypeMasterById(Long typeOfTreatement) {
+		Optional<TreatmentTypeMasterDomain> customerDe =Optional.of( new TreatmentTypeMasterDomain());
+		try {
+			customerDe = treatmentTypeMasterRepo.findById(typeOfTreatement);
+		}catch(Exception e) {
+			logger.error("Doctor details for cutomer id "+typeOfTreatement+" could not be saved and something went wrong",e);			
+		}
+		return customerDe.orElse(null);
+	}
+
+	public InvoiceTypeMaster findInvoiceTypeMasterById(Long invoiceTypeId) {
+		Optional<InvoiceTypeMaster> customerDe =Optional.of( new InvoiceTypeMaster());
+		try {
+			customerDe = invoiceTypeMaster.findById(invoiceTypeId);
+		}catch(Exception e) {
+			logger.error("Doctor details for cutomer id "+invoiceTypeId+" could not be saved and something went wrong",e);			
+		}
+		return customerDe.orElse(null);
+	}
+
+	public CtAngioDetailsDomain findCtAngioDetailsById(Long id) {
+		Optional<CtAngioDetailsDomain> customerDe =Optional.of( new CtAngioDetailsDomain());
+		try {
+			customerDe = ctAngioRepo.findById(id);
+			ctAngioRepo.refresh(customerDe.get());
+		}catch(Exception e) {
+			logger.error("Doctor details for cutomer id "+id+" could not be saved and something went wrong",e);			
+		}
+		return customerDe.orElse(null);
 	}
 }

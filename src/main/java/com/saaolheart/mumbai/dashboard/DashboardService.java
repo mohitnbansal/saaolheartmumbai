@@ -54,14 +54,14 @@ public class DashboardService {
 	}
 	
 	public Integer findLastVisitOfCustomerByCustomerId(Long id,AppointmentType type) {
-		Integer max= 0;
+		Optional<Integer> max= null;
 		try {
 		max = appointmentRepo.findMaxVisitByCustomerId(id,type);
 		}catch(Exception e) {
 			logger.error("Unable to get Max value count of Appointment for Customer with Id"+id);
-			max= 0;
+			
 		}
-		return max;
+		return max.orElse(new Integer(0));
 	}
 
 	public CustomerAppointmentDomain saveAppointment(CustomerAppointmentDomain appointmentDb) {

@@ -1,5 +1,6 @@
 package com.saaolheart.mumbai.dashboard;
 
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,9 @@ import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.customer.CustomerRepository;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.invoice.InvoiceRepository;
+import com.saaolheart.mumbai.invoice.InvoiceStatuses;
+import com.saaolheart.mumbai.store.stock.StockDomain;
+import com.saaolheart.mumbai.store.stock.StockRepo;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailsRepo;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
@@ -43,8 +47,16 @@ public class DashboardService {
 	@Autowired
 	private TreatmentPlanDetailsRepo treatmentDetailPlanRepo;
 	
+
+	@Autowired
+	private TreatmentPlanRepository treatmentDetailRepo;
+	
 	@Autowired
 	private TreatmentPlanRepository treatmentPlanRepo;
+	
+
+	@Autowired
+	private StockRepo stockRepo;
 	
 	
 	public CustomerAppointmentDomain findAppontmentDetailById(Long id) {
@@ -183,5 +195,43 @@ Optional<TreatmentPlanDomain> treatmenPlan = Optional.of(new TreatmentPlanDomain
 				
 			}
 			return treatmentplanList.orElse(null);
+		}
+
+		public List<TreatmentPlanDomain> getTreatmentPendingCustomer() {
+			Optional<List<TreatmentPlanDomain>> treatmentplanList = Optional.of(new ArrayList<TreatmentPlanDomain>());
+try {
+	List<String> status = new ArrayList<String>();
+	status.add(TreatmentStatusConstants.PENDING);
+	treatmentplanList = treatmentDetailRepo.findByTreatmentStatusIgnoreCaseIn(status);
+}catch(Exception e) {
+	logger.error("Unable to Save treamentplan for customer by id");
+
+}
+
+			
+			return treatmentplanList.orElse(null);
+		}
+
+		public List<InvoiceDomain> getPaymentPendingCustomer() {
+Optional<List<InvoiceDomain>> invocicePendingList = Optional.of(new ArrayList<>());
+try {
+	List<String> status = new ArrayList<String>();
+	status.add(InvoiceStatuses.PARTIALLYPAID.getInvoiceStatuses());
+	status.add(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
+	invocicePendingList = invoiceRepo.findByInvoiceStatusIgnoreCaseIn(status);
+}catch(Exception e) {
+	
+}
+			return invocicePendingList.orElse(null);
+		}
+
+		public List<StockDomain> findStockswithLowQty(Long limit) {
+			Optional<List<StockDomain>> invoiceDomain = Optional.of(new ArrayList<StockDomain>());
+			try {
+				invoiceDomain = stockRepo.findByQtyOfStockAvailableGreaterThanEqual(limit);
+			}catch(Exception e) {
+				
+			}
+			return invoiceDomain.orElse(null);
 		}
 }

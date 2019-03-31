@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.saaolheart.mumbai.common.response.ActionResponse;
 import com.saaolheart.mumbai.common.response.ActionStatus;
@@ -46,6 +47,7 @@ import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.customer.CustomerService;
 import com.saaolheart.mumbai.customer.VisitngFor;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
+import com.saaolheart.mumbai.store.stock.StockDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentStatusConstants;
@@ -354,7 +356,7 @@ public class DashboardController {
 
 	@GetMapping(value = "/getnewjoinee")
 	public ResponseEntity<ActionResponse<List<CustomerDetail>>> getNewjoineeListForToday(HttpServletRequest request,
-			Principal user, BindingResult result, HttpServletResponse response) {
+			Principal user, HttpServletResponse response) {
 		ActionResponse<List<CustomerDetail>> actionResponse = new ActionResponse<List<CustomerDetail>>();
 		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 		List<CustomerDetail> customerDetailList = new ArrayList<>();
@@ -432,18 +434,48 @@ public class DashboardController {
 	}
 
 	@GetMapping(value = "/gettreatmentpendinglist")
-	public void getTreatmentPendingPlanList() {
-
+	public  ResponseEntity<ActionResponse<List<TreatmentPlanDomain>>>  getTreatmentPendingPlanList() 
+	{
+		ActionResponse<List<TreatmentPlanDomain>> actionResponse = new ActionResponse<List<TreatmentPlanDomain>>();
+		List<TreatmentPlanDomain> treatmentDomainList = dashboardService.getTreatmentPendingCustomer();
+		
+		if(treatmentDomainList!=null)
+		{
+			for(TreatmentPlanDomain appoint:treatmentDomainList)
+			{
+				CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
+				appoint.setCustomerDetails(customerDetail);
+			}
+		}
+		actionResponse.setDocument(treatmentDomainList);
+	return new ResponseEntity<ActionResponse<List<TreatmentPlanDomain>>>(actionResponse,HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getlowstocks")
-	public void getLowStockList() {
-
+	public ResponseEntity<ActionResponse<List<StockDomain> >> getLowStockList(@RequestParam("limit") Long limit,
+			HttpServletRequest request,Principal user,
+			HttpServletResponse response)
+	{
+		ActionResponse<List<StockDomain> > actionResponse = new ActionResponse<List<StockDomain>>();
+		List<StockDomain> stockDomainList = dashboardService.findStockswithLowQty(limit);
+		actionResponse.setDocument(stockDomainList);
+		return new ResponseEntity<ActionResponse<List<StockDomain>>>(actionResponse,HttpStatus.OK);
 	}
 
 	@GetMapping(value="/getpaymentpendingList")
-	public void getPaymentPendingList() {
-		
+	public  ResponseEntity<ActionResponse<List<InvoiceDomain>>>  getPaymentPendingList()
+	{
+		ActionResponse<List<InvoiceDomain>> actionResponse = new ActionResponse<List<InvoiceDomain>>();
+		List<InvoiceDomain> invoiceDomainList = dashboardService.getPaymentPendingCustomer();
+		if(invoiceDomainList!=null) 
+		{
+			for(InvoiceDomain appoint:invoiceDomainList)
+			{
+				CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
+				appoint.setCustomerDetails(customerDetail);
+			}
+		}
+		return new ResponseEntity<ActionResponse<List<InvoiceDomain>>>(actionResponse,HttpStatus.OK);
 	}
 	public boolean assignAndValidateAppointment(Integer noMachine, Integer dateNo,Date appointmentDate) {
 		

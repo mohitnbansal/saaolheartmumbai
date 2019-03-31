@@ -18,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain;
 
@@ -78,8 +79,23 @@ public class TreatmentPlanDomain implements Serializable{
 	@Transient
 	private Long invoiceMasterTypeId;
 	
+
+	@Transient
+	private CustomerDetail customerDetails;
 	
 	
+	
+	
+	
+	
+	public CustomerDetail getCustomerDetails() {
+		return customerDetails;
+	}
+
+	public void setCustomerDetails(CustomerDetail customerDetails) {
+		this.customerDetails = customerDetails;
+	}
+
 	public Integer getNoOfSittings() {
 		return noOfSittings;
 	}

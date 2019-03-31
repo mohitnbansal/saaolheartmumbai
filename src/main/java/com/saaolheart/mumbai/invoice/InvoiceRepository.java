@@ -1,5 +1,6 @@
 package com.saaolheart.mumbai.invoice;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,6 @@ public interface InvoiceRepository extends CustomRepository<InvoiceDomain, Long>
 
 	
 Optional<List<InvoiceDomain>> findByBalanceAmtGreaterThan(Double d);
+
+Optional<List<InvoiceDomain>> findByInvoiceStatusIgnoreCaseIn(Collection<String> status);
 }

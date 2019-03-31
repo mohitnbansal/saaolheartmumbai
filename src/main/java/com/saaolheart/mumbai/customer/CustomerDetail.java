@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
@@ -61,6 +63,7 @@ public class CustomerDetail implements Serializable {
 	
 	@Column(name="DATE_OF_CREATION")
 	@CreationTimestamp
+	@Temporal(TemporalType.DATE)
 	private Date dateOfCreation;
 	
 	

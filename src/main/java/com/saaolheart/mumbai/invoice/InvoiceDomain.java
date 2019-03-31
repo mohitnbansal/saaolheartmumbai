@@ -95,9 +95,21 @@ public class InvoiceDomain  implements Serializable{
 	private Double newInvoiceAmountInCaseofCancel;
 	
 	
+
+	@Transient
+	private CustomerDetail customerDetails;
+	
+		
 	
 	
-	
+	public CustomerDetail getCustomerDetails() {
+		return customerDetails;
+	}
+
+	public void setCustomerDetails(CustomerDetail customerDetails) {
+		this.customerDetails = customerDetails;
+	}
+
 	public Double getNewInvoiceAmountInCaseofCancel() {
 		return newInvoiceAmountInCaseofCancel;
 	}

@@ -29,10 +29,33 @@ public class DatasourceConfig {
 	@Qualifier("datasource") 
     public DataSource dataSource(){
        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//       dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+       
+       /**
+        * Off
+        */
+//       dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+//       dataSource.setUrl("jdbc:mysql://localhost:3306/test1");
+//       dataSource.setUsername( "root" );
+//       dataSource.setPassword( "admin" );
+       
+       
+       /**
+        * loc
+        */
+//       dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//       dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
+//       dataSource.setUsername( "root" );
+//       dataSource.setPassword( "root" );
+//       
+       
+       /**
+        * UAT
+        */
        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
        dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
-       dataSource.setUsername( "root" );
-       dataSource.setPassword( "root" );
+       dataSource.setUsername( "protechnic" );
+       dataSource.setPassword( "protechnic" );
        return dataSource;
     }
 	

@@ -344,10 +344,12 @@ public class DashboardController {
 		appointmentTypeList.add(AppointmentType.getAppointmentType("Treatment ECP"));
 		appointmentTypeList.add(AppointmentType.getAppointmentType("Treatment BCA"));
 		appointmentList = dashboardService.getAppointmentPendingList(appointmentTypeList);
+		if(appointmentList!=null) {
 		for(CustomerAppointmentDomain appoint:appointmentList)
 		{
 			CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
 			appoint.setCustomerName(customerDetail.getFirstName() + " " + customerDetail.getLastName());
+		}
 		}
 		actionResponse.setDocument(appointmentList);
 		return new ResponseEntity<ActionResponse<List<CustomerAppointmentDomain>>>(actionResponse, mMap, HttpStatus.OK);

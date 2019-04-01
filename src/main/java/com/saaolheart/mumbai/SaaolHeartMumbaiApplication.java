@@ -15,7 +15,7 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages= {"com.saaolheart.mumbai"})
+@ComponentScan("com.saaolheart.mumbai")
 @EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
 @EnableAutoConfiguration
 public class SaaolHeartMumbaiApplication {

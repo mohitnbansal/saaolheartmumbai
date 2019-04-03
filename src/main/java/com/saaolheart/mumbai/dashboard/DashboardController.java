@@ -11,8 +11,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +47,6 @@ import com.saaolheart.mumbai.customer.AppointmentType;
 import com.saaolheart.mumbai.customer.CustomerAppointmentDomain;
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.customer.CustomerService;
-import com.saaolheart.mumbai.customer.VisitngFor;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.store.stock.StockDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
@@ -81,13 +82,12 @@ public class DashboardController {
 			BindingResult result, HttpServletResponse response) throws ParseException {
 		
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
-		
-		
-		Date newDate = parse(appointment.getExpectedTime());
-
-		appointment.setDateOfScheduling(newDate);
-		appointment.setExpectedTime(newDate);
+		Set<String> errorOrMessage = new HashSet<String>();
+//		
+//		Date newDate = parse(appointment.getExpectedTime());
+//
+		appointment.setDateOfScheduling(new Date());
+//		appointment.setExpectedTime(appointment.getExpectedTime());
 		// appointment.setDateOfScheduling(dateFormat.format(appointment.getDateOfScheduling());
 		CustomerAppointmentDomain customerApointmentDb = null;
 		if (appointment != null && appointment.getCustomerId() != null) {
@@ -123,11 +123,13 @@ public class DashboardController {
 				boolean isTrue = 	assignAndValidateAppointment(noMachine, dateNo,appointment.getExpectedTime());
 				if(isTrue) {
 					actionResponse.setActionResponse(ActionStatus.FAILED);
-					mMap.add("failed", "Another Pateint is already scheduled for the same slot please select other");
-					return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, mMap, HttpStatus.CONFLICT);
+//					mMap.add("failed", "Another Pateint is already scheduled for the same slot please select other");
+					errorOrMessage.add("Another Pateint is already scheduled for the same slot please select other");
+					actionResponse.setError(errorOrMessage);
+					return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,  HttpStatus.CONFLICT);
 				}else {
 					
-				
+				if(customer.getTreatmentPlanList()!=null && !customer.getTreatmentPlanList().isEmpty()) {
 					for (TreatmentPlanDomain treatment : customer.getTreatmentPlanList()) {
 						if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.PENDING)
 								&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("ECP")) {
@@ -142,6 +144,12 @@ public class DashboardController {
 
 						}
 					}
+				}else {
+					/**
+					 * Else No Treatment Exist for the Customer and Hence No Schduling Can be Done
+					 */
+					errorOrMessage.add("No Treatment Plan Exists for Scheduling any sittings");
+				}
 				}
 
 					
@@ -186,7 +194,7 @@ public class DashboardController {
 					CustomerAppointmentDomain lastAppointment = customer.getCustomerAppointmentList().get(size - 1);
 					appointment.setIsVisitDone(AppointmentConstants.PENDING);
 					appointment.setDateOfScheduling(new Date());
-					appointment.setExpectedTime(appointment.getDateOfScheduling());
+					appointment.setExpectedTime(appointment.getExpectedTime());
 					appointment.setScheduledNumber(lastAppointment.getScheduledNumber() + 1);
 					appointment.setTypeOfAppointment(
 							AppointmentType.getAppointmentType(appointment.getTypeOfAppointmentString()));
@@ -198,7 +206,7 @@ public class DashboardController {
 				} else {
 					appointment.setIsVisitDone(AppointmentConstants.PENDING);
 					appointment.setDateOfScheduling(new Date());
-					appointment.setExpectedTime(appointment.getDateOfScheduling());
+					appointment.setExpectedTime(appointment.getExpectedTime());
 					appointment.setScheduledNumber(1);
 					appointment.setTypeOfAppointment(
 							AppointmentType.getAppointmentType(appointment.getTypeOfAppointmentString()));
@@ -213,10 +221,12 @@ public class DashboardController {
 				customerApointmentDb = customerDb.getCustomerAppointmentList().get(dbSize - 1);
 				actionResponse.setDocument(customerApointmentDb);
 				actionResponse.setActionResponse(ActionStatus.SUCCESS);
-				mMap.add("success", "User Created Successfully in Database");
+				errorOrMessage.add("Appointment Scheduled Succesfully for Customer " + customerDb.getFirstName() + " " + customerDb.getLastName());
+//				mMap.add("success", "User Created Successfully in Database");
 			}
 		}
-		return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, mMap, HttpStatus.OK);
+		actionResponse.setError(errorOrMessage);
+		return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,  HttpStatus.OK);
 
 	}
 
@@ -478,6 +488,41 @@ public class DashboardController {
 			}
 		}
 		return new ResponseEntity<ActionResponse<List<InvoiceDomain>>>(actionResponse,HttpStatus.OK);
+	}
+	
+	@PostMapping(value="/changescehduling")
+	public ResponseEntity<ActionResponse<CustomerAppointmentDomain>> changeSchedulingFromUI(/* @Valid */
+			@RequestBody CustomerAppointmentDomain appointment, HttpServletRequest request, Principal user,
+			BindingResult result, HttpServletResponse response) {
+		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
+Set<String> errorAndMsg = new HashSet<String>();
+Integer dateNo = null;
+try {
+	  LocalDateTime local =
+	  LocalDateTime.ofInstant(appointment.getExpectedTime().toInstant()
+	  , ZoneId.systemDefault()); 
+	  dateNo = local.getHour();
+	  
+	  }catch(DateTimeException e) {
+	  
+	  } 
+boolean isTrue = 	assignAndValidateAppointment(appointment.getMachineNo(), dateNo,appointment.getExpectedTime());
+if(isTrue) {
+	actionResponse.setActionResponse(ActionStatus.FAILED);
+//	mMap.add("failed", "Another Pateint is already scheduled for the same slot please select other");
+	errorAndMsg.add("Another Pateint is already scheduled for the same slot please select other");
+	return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,  HttpStatus.CONFLICT);
+}
+		if(appointment.getId()!=null) {
+			CustomerAppointmentDomain customerAppDb = dashboardService.findAppontmentDetailById(appointment.getId());
+			customerAppDb.setExpectedTime(appointment.getExpectedTime());
+			customerAppDb.setMachineNo(appointment.getMachineNo());
+			customerAppDb= dashboardService.saveAppointment(customerAppDb);
+			errorAndMsg.add("Scheduling succesfully changed for "+ appointment.getCustomerName());
+			actionResponse.setDocument(customerAppDb);
+			actionResponse.setError(errorAndMsg);
+		}
+		return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,HttpStatus.OK);
 	}
 	public boolean assignAndValidateAppointment(Integer noMachine, Integer dateNo,Date appointmentDate) {
 		

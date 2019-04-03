@@ -178,7 +178,7 @@
 
 	<build>
 		<plugins>
-			<plugin>
+		<!-- 	<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
@@ -190,14 +190,14 @@
         <mainClass>com.saaolheart.mumbai.SaaolHeartMumbaiApplication</mainClass>
         <layout>JAR</layout>
       </configuration>
-     <!--  <executions>
+      <executions>
         <execution>
           <goals>
             <goal>repackage</goal>
           </goals>
         </execution>
-      </executions> -->
-    </plugin>
+      </executions>
+    </plugin> -->
 		</plugins>
 	</build>
 <repositories>

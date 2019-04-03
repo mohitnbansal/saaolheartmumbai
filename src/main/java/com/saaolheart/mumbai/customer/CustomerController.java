@@ -49,6 +49,7 @@ import com.saaolheart.mumbai.treatment.ctangiography.CtAngioDetailsDomain;
 import com.saaolheart.mumbai.treatment.doctorconsultation.DoctorConsultationDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
 import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentStatusConstants;
 
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
@@ -91,10 +92,8 @@ public class CustomerController {
 		if(customer!=null && customer.getId()==null) {
 		 custDb = customerService.findCustomerByPhoneNo(customer.getMobileNo());
 		 if(custDb!=null && !custDb.isEmpty()) {
-			
 			 newErrors.add("User Already Exist in Database");
 			 actionResponse.setDocument(customer);
-			 actionResponse.setError(newErrors);
 			 return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.BAD_REQUEST);
 		 }
 		}
@@ -107,9 +106,9 @@ public class CustomerController {
 			actionResponse.setDocument(customer);
 			actionResponse.setActionResponse(ActionStatus.SUCCESS);
 			 newErrors.add("User Created Successfully in Database");
-			 actionResponse.setError(newErrors);
+			 
 		}
-		
+		actionResponse.setError(newErrors);
 		return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.OK);
 		
 	}
@@ -146,7 +145,7 @@ public class CustomerController {
 	{
 		
 		ActionResponse<DoctorConsultationDomain> actionResponse = new ActionResponse<DoctorConsultationDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+		Set<String> errAndMsg = new HashSet<String>();
 		DoctorConsultationDomain doctorDetailsDB = null;
 		/**
 		 * Add New Record
@@ -168,22 +167,26 @@ public class CustomerController {
 				
 				actionResponse.setDocument(doctorDetailsDB);
 				actionResponse.setActionResponse(ActionStatus.SUCCESS);
-				mMap.add("success", "Doctor Details Successfully Updated in DB");			
-			return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,mMap,HttpStatus.OK);
+				errAndMsg.add("Doctor Details Successfully Updated in DB");	
+				 actionResponse.setError(errAndMsg);
+			return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,HttpStatus.OK);
 				}
 			else {
-				 mMap.add("error", "Doctor details not able to Save");
+				errAndMsg.add( "Doctor details not able to Save");
 				 actionResponse.setDocument(doctordetails);
-				 return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+				 actionResponse.setError(errAndMsg);
+				 
+				 return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 			   }
 		}
 		/**
 		 * Send Error 
 		 */
 		else  {
-			 mMap.add("error", "Doctor details Data missing");
+			errAndMsg.add( "Doctor details Data missing");
 			 actionResponse.setDocument(doctordetails);
-			 return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+			 actionResponse.setError(errAndMsg);
+			 return new ResponseEntity<ActionResponse<DoctorConsultationDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 
 			
 		}
@@ -203,7 +206,7 @@ public class CustomerController {
 		InvoiceDomain newFromDb = invoiceDomain;
 		InvoiceDomain invoiceDomainFromDb = customerService.findInvoiceDomainById(invoiceDomain.getId());
 		ActionResponse<InvoiceDomain> actionResponse = new ActionResponse<InvoiceDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+	Set<String> errAndMsg = new HashSet<String>();
 		if(invoiceDomainFromDb!=null)
 		{
 			InvoiceRecieptDetailDomain invRcpt = new InvoiceRecieptDetailDomain();
@@ -234,7 +237,9 @@ public class CustomerController {
 			newFromDb = customerService.saveinvoiceDomain(invoiceDomainFromDb);
 		}
 		
-		actionResponse.setDocument(newFromDb);		
+		errAndMsg.add("Reciept Generated Succesfully !");
+		actionResponse.setDocument(newFromDb);	
+		actionResponse.setError(errAndMsg);
 		return new ResponseEntity<ActionResponse<InvoiceDomain>>(actionResponse,HttpStatus.OK);
 
 		
@@ -315,7 +320,7 @@ public class CustomerController {
 	{
 		
 		ActionResponse<CtAngioDetailsDomain> actionResponse = new ActionResponse<CtAngioDetailsDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+		Set<String> errAndMsg = new HashSet<String>();
 		CtAngioDetailsDomain ctAngioFromDb = null;
 		/**
 		 * Add New Record
@@ -337,22 +342,25 @@ public class CustomerController {
 			if(ctAngioFromDb !=null && ctAngioFromDb.getId()!=null) {
 				actionResponse.setDocument(ctAngioFromDb);
 				actionResponse.setActionResponse(ActionStatus.SUCCESS);
-				mMap.add("success", "Doctor Details Successfully Updated in DB");			
-			return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,mMap,HttpStatus.OK);
+				errAndMsg.add( "CT Angio Details Successfully Updated in DB");	
+				 actionResponse.setError(errAndMsg);
+			return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,HttpStatus.OK);
 				}
 			else {
-				 mMap.add("error", "Doctor details not able to Save");
+				errAndMsg.add("CT Angio details not able to Save");
 				 actionResponse.setDocument(ctAngioDetails);
-				 return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+				 actionResponse.setError(errAndMsg);
+				 return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 			   }
 		}
 		/**
 		 * Send Error 
 		 */
 		else  {
-			 mMap.add("error", "Doctor details Data missing");
+			errAndMsg.add( "CT Angio details Data missing");
 			 actionResponse.setDocument(ctAngioDetails);
-			 return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+			 actionResponse.setError(errAndMsg);
+			 return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 
 			
 		}
@@ -371,7 +379,7 @@ public class CustomerController {
 	{
 		
 		ActionResponse<TreatmentPlanDomain> actionResponse = new ActionResponse<TreatmentPlanDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+		Set<String> mMap = new HashSet<>();
 		TreatmentPlanDomain treatmentFromDB = null;
 		/**
 		 * Add New Record
@@ -388,27 +396,30 @@ public class CustomerController {
 			invoiceDetail.setInvoiceTypeId(invoiceTypeId);//need mapped in UI dynamically
 			invoiceDetail.setGeneretedByName(user.getName());
 			treatmentdetails.setInvoiceDomain(invoiceDetail);
-			
+			treatmentdetails.setTreatmentStatus(TreatmentStatusConstants.PENDING);
 			treatmentFromDB = customerService.saveTreatmentPlan(treatmentdetails);
 			if(treatmentFromDB !=null && treatmentFromDB.getId()!=null) {
 				actionResponse.setDocument(treatmentFromDB);
 				actionResponse.setActionResponse(ActionStatus.SUCCESS);
-				mMap.add("success", "Treatment Details Successfully Updated in DB");			
-			return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,mMap,HttpStatus.OK);
+				mMap.add( "Treatment Details Successfully Updated in DB");		
+				actionResponse.setError(mMap);
+			return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,HttpStatus.OK);
 				}
 			else {
-				 mMap.add("error", "Treatment Details  not able to Save");
+				 mMap.add("Treatment Details  not able to Save");
 				 actionResponse.setDocument(treatmentdetails);
-				 return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+				 actionResponse.setError(mMap);
+				 return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 			   }
 		}
 		/**
 		 * Send Error 
 		 */
 		else  {
-			 mMap.add("error", "Treatment Details Data missing");
+			 mMap.add( "Treatment Details Data missing");
 			 actionResponse.setDocument(treatmentdetails);
-			 return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,mMap,HttpStatus.BAD_REQUEST);
+			 actionResponse.setError(mMap);
+			 return new ResponseEntity<ActionResponse<TreatmentPlanDomain>>(actionResponse,HttpStatus.BAD_REQUEST);
 
 			
 		}

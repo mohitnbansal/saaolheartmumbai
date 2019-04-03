@@ -162,6 +162,7 @@ public class CustomerService {
 		TreatmentPlanDomain customerDe = new TreatmentPlanDomain();
 		try {
 			customerDe = treatmentRepo.save(treatmentdetails);
+			treatmentRepo.refresh(customerDe);
 		}catch(Exception e) {
 			logger.error("Treatment details for cutomer id "+treatmentdetails.getCustomerId()+" could not be saved and something went wrong",e);			
 		}

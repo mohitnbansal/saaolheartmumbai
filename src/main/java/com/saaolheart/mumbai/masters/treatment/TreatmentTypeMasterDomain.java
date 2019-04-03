@@ -1,6 +1,7 @@
 package com.saaolheart.mumbai.masters.treatment;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="TREATMENT_TYPE_MASTER")
@@ -32,6 +35,21 @@ public class TreatmentTypeMasterDomain implements Serializable{
 	
 	@Column(name="TOTAL_COST")
 	private Double totalCost;
+
+	
+	@Column(name="TOTAL_HOURS")
+	@Temporal(TemporalType.TIME)
+	private Date totalHours;
+	
+	
+	
+	public Date getTotalHours() {
+		return totalHours;
+	}
+
+	public void setTotalHours(Date totalHours) {
+		this.totalHours = totalHours;
+	}
 
 	public Long getId() {
 		return id;

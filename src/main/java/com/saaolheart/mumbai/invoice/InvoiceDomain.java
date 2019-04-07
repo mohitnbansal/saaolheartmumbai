@@ -2,6 +2,7 @@ package com.saaolheart.mumbai.invoice;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.springframework.data.annotation.CreatedDate;
 
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster;
@@ -78,7 +81,10 @@ public class InvoiceDomain  implements Serializable{
 	@JoinColumn(name="GENERATED_BY",referencedColumnName="username",insertable=false,updatable=false)
 	private User generatedBy;
 
-
+	@Column(name="CREATED_DATE")
+	@CreatedDate
+	private Date createdDate;
+	
 	@Transient
 	private String bankName;
 	
@@ -102,6 +108,14 @@ public class InvoiceDomain  implements Serializable{
 		
 	
 	
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
 	public CustomerDetail getCustomerDetails() {
 		return customerDetails;
 	}

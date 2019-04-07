@@ -29,7 +29,7 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
  * @author Dhananjay Jha
  *
  */
-public class PdfGenerator<T> {
+public class PdfGenerator {
 	
 	private String filePath;
 	

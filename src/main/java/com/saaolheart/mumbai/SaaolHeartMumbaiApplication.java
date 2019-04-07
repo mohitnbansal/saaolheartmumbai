@@ -1,20 +1,22 @@
 package com.saaolheart.mumbai;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
-
-import javax.persistence.Entity;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import com.saaolheart.mumbai.common.utility.PdfGenerator;
 import com.saaolheart.mumbai.configuration.repositoryconfig.CustomRepositoryImpl;
 
 import fr.opensagres.xdocreport.core.XDocReportException;
+import fr.opensagres.xdocreport.template.TemplateEngineKind;
 
 
 @SpringBootApplication
@@ -40,29 +42,23 @@ public class SaaolHeartMumbaiApplication {
 		 * 
 		 * 
 		 */
-		/*
-		 * String templatePath =
-		 * "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/ThankYouNote_Template.docx";
-		 * 
-		 * Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
-		 * nonImageVariableMap.put("thank_you_date", "24-June-2013");
-		 * nonImageVariableMap.put("name", "Rajani Jha");
-		 * nonImageVariableMap.put("website", "www.sambhashanam.com");
-		 * nonImageVariableMap.put("author_name", "Dhananjay Jha"); Map<String, String>
-		 * imageVariablesWithPathMap =new HashMap<String, String>();
-		 * imageVariablesWithPathMap.put("header_image_logo",
-		 * "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png"
-		 * );
-		 * 
-		 * DocXDocumentMergeAndConvertor docxDocumentMergerAndConverter = new
-		 * DocXDocumentMergeAndConvertor(); 
-		 * byte[] mergedOutput =
-		 * docxDocumentMergerAndConverter.mergeAndGeneratePDFOutput(templatePath,
-		 * TemplateEngineKind.Freemarker, nonImageVariableMap,
-		 * imageVariablesWithPathMap); FileOutputStream os = new FileOutputStream(
-		 * "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/"+
-		 * System.nanoTime()+".pdf"); os.write(mergedOutput); os.flush(); os.close();
-		 */
+		
+//		  String templatePath = "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/ThankYouNote_Template.docx";
+//		  
+//		  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
+//		  nonImageVariableMap.put("thank_you_date", "24-June-2013");
+//		  nonImageVariableMap.put("name", "Rajani Jha");
+//		  nonImageVariableMap.put("website", "www.sambhashanam.com");
+//		  nonImageVariableMap.put("author_name", "Dhananjay Jha"); Map<String, String>
+//		  imageVariablesWithPathMap =new HashMap<String, String>();
+//		  imageVariablesWithPathMap.put("header_image_logo","/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
+//		  
+//		  byte[] mergedOutput =  PdfGenerator.mergeAndGeneratePDFOutput(templatePath, TemplateEngineKind.Velocity, nonImageVariableMap, imageVariablesWithPathMap); 
+//		  FileOutputStream os = new FileOutputStream("/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/"+System.nanoTime()+".pdf");
+//		  os.write(mergedOutput);
+//		  os.flush();
+//		  os.close();
+		 
 	}
 
 }

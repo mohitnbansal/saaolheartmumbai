@@ -132,7 +132,8 @@ public class DashboardController {
 				if(customer.getTreatmentPlanList()!=null && !customer.getTreatmentPlanList().isEmpty()) {
 					for (TreatmentPlanDomain treatment : customer.getTreatmentPlanList()) {
 						if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.PENDING)
-								&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("ECP")) {
+								&&( treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("ECP")
+										|| treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BOTH"))) {
 
 							TreatmentPlanDetailDomain newTreatment = new TreatmentPlanDetailDomain();
 							newTreatment.setTreatmentPlanId(treatment.getId());
@@ -161,7 +162,8 @@ public class DashboardController {
 
 					for (TreatmentPlanDomain treatment : customer.getTreatmentPlanList()) {
 						if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.PENDING)
-								&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")) {
+								&& (treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")
+								|| treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BOTH"))) {
 
 							TreatmentPlanDetailDomain newTreatment = new TreatmentPlanDetailDomain();
 							newTreatment.setIsTreatmentDone(Constants.PENDING);
@@ -405,8 +407,7 @@ public class DashboardController {
 			BindingResult result, HttpServletResponse response) {
 		
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
-	
+	Set<String> errAndMsg = new HashSet<String>();
 		TreatmentPlanDomain treatment = dashboardService.findTreatmentPlanById(appointment.getTreatmentPlanId());
 		Duration dt = null;
 		if(treatment.getTime()!=null) {
@@ -435,14 +436,14 @@ public class DashboardController {
 		appointmentDb.setVisitNumber(maxCount + 1);
 		appointmentDb.setIsVisitDone(Constants.COMPLETED);
 		appointmentDb.setVisitDateAndTime(appointment.getStart());	
-		appointmentDb.setTimeInDuration(Duration.ofMinutes(appointment.getDuration().longValue()));
+		appointmentDb.setTimeInDuration(appointment.getDuration().longValue());
 		CustomerAppointmentDomain appointmentSavedDb = dashboardService.saveAppointment(appointmentDb);
 		actionResponse.setDocument(appointmentSavedDb);
 		actionResponse.setActionResponse(ActionStatus.SUCCESS);
-		mMap.add("success", "User Created Successfully in Database");
+		errAndMsg.add( "Appointment Succesfully marked as complteted");
 		}
-		
-	return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, mMap, HttpStatus.OK);
+		actionResponse.setError(errAndMsg);
+	return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/gettreatmentpendinglist")

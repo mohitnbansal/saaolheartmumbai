@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.saaolheart.mumbai.customer.CustomerRepository;
 import com.saaolheart.mumbai.invoice.InvoiceRepository;
+import com.saaolheart.mumbai.store.customersales.CustomerPurchasesDomain;
+import com.saaolheart.mumbai.store.customersales.CustomerPurchasesRepo;
 
 
 @Service
@@ -36,6 +38,9 @@ public class StockManagmentService {
 	@Autowired
 	private StockHistoryRepo stockHistoryDetailRepo;
 	
+	@Autowired
+	private CustomerPurchasesRepo customerRepo;
+	
 	public StockDomain saveStock(StockDomain stock) {
 		
 		try {
@@ -60,7 +65,7 @@ public class StockManagmentService {
 		
 			try {
 				
-				customerList = stockRepo.findByStockNameContaining(searchParam);
+				customerList = stockRepo.findByStockNameIgnoreCaseLike("%"+searchParam+"%");
 			}
 			catch(Exception e) {
 				logger.error("Could Not Find any customer with search param "+searchParam,e);			
@@ -77,6 +82,17 @@ public class StockManagmentService {
 	}catch(Exception e){
 		logger.error("Could Not Find any customer with search param "+stockDomainId,e);			
 	}
+		return stock.orElse(null);
+	}
+
+	public List<CustomerPurchasesDomain> findAllPurchasesForStock(Long id) {
+		Optional<List<CustomerPurchasesDomain>> stock = Optional.of(new ArrayList<CustomerPurchasesDomain>());
+		try {
+			stock = customerRepo.findByStockDomainId(id);
+		}catch(Exception e) {
+			logger.error("Could not find any purchases for stock by id" + id);
+		}
+		
 		return stock.orElse(null);
 	}
 	

@@ -16,4 +16,6 @@ public interface CustomerAppointmentRepo extends JpaRepository<CustomerAppointme
 	Optional<Integer> findMaxVisitByCustomerId(@Param("id") Long id, @Param("typeOfAppointment") AppointmentType typeOfAppointment);
 	
 	Optional<List<CustomerAppointmentDomain>> findByIsVisitDoneIgnoreCaseAndTypeOfAppointmentIn(String isVisitDone, List<AppointmentType> appointmentList);
+
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentIn(List<AppointmentType> appointmentType);
 }

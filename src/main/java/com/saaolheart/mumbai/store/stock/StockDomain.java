@@ -82,6 +82,42 @@ public class StockDomain implements Serializable {
 	@JsonIgnore
 	@Transient
 	private String stockCategory;
+	
+	@Transient
+	private Integer qtyOfStockToUpdate;
+	
+	@Transient
+	private String isAdded;
+	
+	@Transient
+	private String reasonForUpdate;
+	
+	
+	
+
+	public String getReasonForUpdate() {
+		return reasonForUpdate;
+	}
+
+	public void setReasonForUpdate(String reasonForUpdate) {
+		this.reasonForUpdate = reasonForUpdate;
+	}
+
+	public String getIsAdded() {
+		return isAdded;
+	}
+
+	public void setIsAdded(String isAdded) {
+		this.isAdded = isAdded;
+	}
+
+	public Integer getQtyOfStockToUpdate() {
+		return qtyOfStockToUpdate;
+	}
+
+	public void setQtyOfStockToUpdate(Integer qtyOfStockToUpdate) {
+		this.qtyOfStockToUpdate = qtyOfStockToUpdate;
+	}
 
 	public Long getId() {
 		return id;

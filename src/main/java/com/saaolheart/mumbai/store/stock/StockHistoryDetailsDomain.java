@@ -52,6 +52,20 @@ public class StockHistoryDetailsDomain implements Serializable{
 	@ManyToOne
 	@JoinColumn(name="LAST_UPDATED_BY",referencedColumnName="username",insertable=false,updatable=false)
 	private User lastUpdatedByUser;
+	
+	@Column(name="STOCK_ID")
+	private Long stockId;
+	
+	
+	
+	
+	public Long getStockId() {
+		return stockId;
+	}
+
+	public void setStockId(Long stockId) {
+		this.stockId = stockId;
+	}
 
 	public Long getId() {
 		return id;

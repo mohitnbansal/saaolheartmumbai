@@ -126,7 +126,7 @@ public class DashboardService {
 		Optional<List<CustomerAppointmentDomain>> customerAppointmentList = Optional.of(new ArrayList<CustomerAppointmentDomain>());
 		try {
 			
-			customerAppointmentList = appointmentRepo.findByIsVisitDoneIgnoreCaseAndTypeOfAppointmentIn(AppointmentConstants.PENDING, appointmentType);
+			customerAppointmentList = appointmentRepo.findByTypeOfAppointmentIn(appointmentType);
 		}
 		catch(Exception e) {
 			logger.error("Customer Appointment List unable to fetch");

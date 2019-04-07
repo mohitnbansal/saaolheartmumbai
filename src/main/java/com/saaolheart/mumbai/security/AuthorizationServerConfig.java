@@ -100,7 +100,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             .secret(encoder().encode(clientSecret))
             .authorizedGrantTypes(grantType)
            // .authorities("ROLE_ADMIN","ROLE_STANDARD")
-            .scopes(scopeRead, scopeWrite).accessTokenValiditySeconds(1000)
+            .scopes(scopeRead, scopeWrite).accessTokenValiditySeconds(Integer.MAX_VALUE)
             .resourceIds(resourceIds).refreshTokenValiditySeconds(Integer.MAX_VALUE);
 	        
 	    }

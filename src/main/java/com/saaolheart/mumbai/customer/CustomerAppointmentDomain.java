@@ -79,7 +79,7 @@ public class CustomerAppointmentDomain  implements Serializable {
 	private Long treatmentDetailPlanId;
 	
 	@Column(name="TIME_IN_DURATION")
-	private Duration timeInDuration;
+	private Long timeInDuration;
 	
 	@Transient
 	private String customerName;
@@ -105,19 +105,20 @@ private Date end;
 
 
 
-	public Duration getTimeInDuration() {
-	return timeInDuration;
-}
-
-
-public void setTimeInDuration(Duration timeInDuration) {
-	this.timeInDuration = timeInDuration;
-}
-
 
 	public Integer getDuration() {
 	return duration;
 }
+
+
+public Long getTimeInDuration() {
+		return timeInDuration;
+	}
+
+
+	public void setTimeInDuration(Long timeInDuration) {
+		this.timeInDuration = timeInDuration;
+	}
 
 
 public void setDuration(Integer duration) {

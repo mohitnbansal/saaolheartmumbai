@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 
 @Entity
@@ -37,7 +38,7 @@ public class CustomerSalesDomain implements Serializable{
 	private List<CustomerPurchasesDomain> customerPurchasesList;
 	
 	@OneToOne(cascade= {CascadeType.ALL},orphanRemoval=true)
-	@JoinColumn(referencedColumnName="ID",name="STOCK_CATEGORY_ID")
+	@JoinColumn(referencedColumnName="ID",name="INVOICE_DOMAIN_ID")
 	private InvoiceDomain invoiceOfPurchase;
 	
 	@Column(name="CUSTOMER_ID")
@@ -67,8 +68,21 @@ public class CustomerSalesDomain implements Serializable{
 	@Transient
 	private String isPrinted;
 	
+	@Transient
+	private String customerName;
 	
 	
+	
+	
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
 	public String getIsPrinted() {
 		return isPrinted;
 	}

@@ -391,8 +391,9 @@ public class CustomerController {
 			InvoiceDomain invoiceDetail = new InvoiceDomain();
 			invoiceDetail.setBalanceAmt(treatmentdetails.getInvoiceTotalamt());
 			invoiceDetail.setTotalInvoiceAmt(treatmentdetails.getInvoiceTotalamt());
-			
+			invoiceDetail.setCustomerId(treatmentdetails.getCustomerId());
 			invoiceDetail.setInvoiceStatus(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
+			invoiceDetail.setCreatedDate(new Date());
 			invoiceDetail.setInvoiceTypeId(invoiceTypeId);//need mapped in UI dynamically
 			invoiceDetail.setGeneretedByName(user.getName());
 			treatmentdetails.setInvoiceDomain(invoiceDetail);
@@ -518,4 +519,7 @@ public class CustomerController {
 		mMap.add("success", "Doctor Details Successfully Updated in DB");			
 	return new ResponseEntity<ActionResponse<CtAngioDetailsDomain>>(actionResponse,mMap,HttpStatus.OK);
 	}
+
+
+	
 }

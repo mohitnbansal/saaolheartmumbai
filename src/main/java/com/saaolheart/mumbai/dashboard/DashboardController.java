@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -79,7 +78,7 @@ public class DashboardController {
 	// @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ActionResponse<CustomerAppointmentDomain>> createAppointment(/* @Valid */
 			@RequestBody CustomerAppointmentDomain appointment, HttpServletRequest request, Principal user,
-			BindingResult result, HttpServletResponse response) throws ParseException {
+			HttpServletResponse response) throws ParseException {
 		
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
 		Set<String> errorOrMessage = new HashSet<String>();
@@ -236,7 +235,7 @@ public class DashboardController {
 	// @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ActionResponse<CustomerAppointmentDomain>> markPatientAppointment(/* @Valid */
 			@RequestBody CustomerAppointmentDomain appointment, HttpServletRequest request, Principal user,
-			BindingResult result, HttpServletResponse response) {
+			 HttpServletResponse response) {
 
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
 		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
@@ -337,7 +336,7 @@ public class DashboardController {
 
 	@GetMapping(value = "/getpaymentpending")
 	public ResponseEntity<ActionResponse<List<InvoiceDomain>>> getPaymentPendingCustomerList(HttpServletRequest request,
-			Principal user, BindingResult result, HttpServletResponse response) {
+			Principal user, HttpServletResponse response) {
 		ActionResponse<List<InvoiceDomain>> actionResponse = new ActionResponse<List<InvoiceDomain>>();
 		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 		List<InvoiceDomain> invoiceDetailList = new ArrayList<>();
@@ -404,7 +403,7 @@ public class DashboardController {
 	// @PreAuthorize("hasRole('ADMIN')")
 	public  ResponseEntity<ActionResponse<CustomerAppointmentDomain>>  updateTreatmentSchedule(/* @Valid */
 			@RequestBody CustomerAppointmentDomain appointment, HttpServletRequest request, Principal user,
-			BindingResult result, HttpServletResponse response) {
+			 HttpServletResponse response) {
 		
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
 	Set<String> errAndMsg = new HashSet<String>();
@@ -436,7 +435,7 @@ public class DashboardController {
 		appointmentDb.setVisitNumber(maxCount + 1);
 		appointmentDb.setIsVisitDone(Constants.COMPLETED);
 		appointmentDb.setVisitDateAndTime(appointment.getStart());	
-		appointmentDb.setTimeInDuration(appointment.getDuration().longValue());
+		appointmentDb.setTimeInDuration(Duration.ofMinutes(appointment.getDuration().longValue()));
 		CustomerAppointmentDomain appointmentSavedDb = dashboardService.saveAppointment(appointmentDb);
 		actionResponse.setDocument(appointmentSavedDb);
 		actionResponse.setActionResponse(ActionStatus.SUCCESS);
@@ -494,7 +493,7 @@ public class DashboardController {
 	@PostMapping(value="/changescehduling")
 	public ResponseEntity<ActionResponse<CustomerAppointmentDomain>> changeSchedulingFromUI(/* @Valid */
 			@RequestBody CustomerAppointmentDomain appointment, HttpServletRequest request, Principal user,
-			BindingResult result, HttpServletResponse response) {
+			 HttpServletResponse response) {
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
 Set<String> errorAndMsg = new HashSet<String>();
 Integer dateNo = null;
@@ -597,5 +596,58 @@ if(isTrue) {
 	        return input;
 	        
 	    }
+	 
+		@GetMapping(value = "/getalldoctorappointment")
+		public ResponseEntity<ActionResponse<List<CustomerAppointmentDomain>>> getAllDoctorAppointment(
+				HttpServletRequest request, Principal user,  HttpServletResponse response) {
+			ActionResponse<List<CustomerAppointmentDomain>> actionResponse = new ActionResponse<List<CustomerAppointmentDomain>>();
+			MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+			List<CustomerAppointmentDomain> appointmentList = new ArrayList<CustomerAppointmentDomain>();
+			List<AppointmentType> appointmentTypeList = new ArrayList<AppointmentType>();
+			appointmentTypeList.add(AppointmentType.getAppointmentType("Dr Appointment"));
+			appointmentList = dashboardService.getAppointmentPendingList(appointmentTypeList);
+			if(appointmentList!=null) {
+			for(CustomerAppointmentDomain appoint:appointmentList)
+			{
+				CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
+				appoint.setCustomerName(customerDetail.getFirstName() + " " + customerDetail.getLastName());
+			}
+			}
+			actionResponse.setDocument(appointmentList);
+			return new ResponseEntity<ActionResponse<List<CustomerAppointmentDomain>>>(actionResponse, mMap, HttpStatus.OK);
+		
 
+		}
+		
+		@GetMapping(value = "/getappointmentbydate")
+		public ResponseEntity<ActionResponse<List<CustomerAppointmentDomain>>> getDoctorAppointmentByDate(
+			@RequestParam("reqDate") String date,	HttpServletRequest request, Principal user,  HttpServletResponse response) {
+			ActionResponse<List<CustomerAppointmentDomain>> actionResponse = new ActionResponse<List<CustomerAppointmentDomain>>();
+			MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+//			String date = request.getParameter("reqDate");
+	        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+			Date dat=null;
+			try {
+				dat = df.parse(date);
+			}
+			catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<CustomerAppointmentDomain> appointmentList = new ArrayList<CustomerAppointmentDomain>();
+			List<AppointmentType> appointmentTypeList = new ArrayList<AppointmentType>();
+			appointmentTypeList.add(AppointmentType.getAppointmentType("Dr Appointment"));
+			appointmentList = dashboardService.getAppointmentByDateAndType(appointmentTypeList,dat);
+			if(appointmentList!=null) {
+			for(CustomerAppointmentDomain appoint:appointmentList)
+			{
+				CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
+				appoint.setCustomerName(customerDetail.getFirstName() + " " + customerDetail.getLastName());
+			}
+			}
+			actionResponse.setDocument(appointmentList);
+			return new ResponseEntity<ActionResponse<List<CustomerAppointmentDomain>>>(actionResponse, mMap, HttpStatus.OK);
+		
+
+		}
 }

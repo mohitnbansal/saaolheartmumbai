@@ -100,6 +100,12 @@
     <version>2.2.0.RELEASE</version>
 </dependency>
 <dependency>
+            <groupId>fr.opensagres.xdocreport</groupId>
+            <artifactId>xdocreport</artifactId>
+            <version>1.0.4</version>
+            <scope>compile</scope>
+</dependency>
+<dependency>
 			<groupId>fr.opensagres.xdocreport</groupId>
 			<artifactId>fr.opensagres.xdocreport.core</artifactId>
 			<version>${xdocreport.version}</version>
@@ -122,6 +128,11 @@
 		<dependency>
 			<groupId>fr.opensagres.xdocreport</groupId>
 			<artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+			<version>${xdocreport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
 			<version>${xdocreport.version}</version>
 		</dependency>
 		<dependency>
@@ -162,6 +173,53 @@
 			<artifactId>batik-1.5-fop</artifactId>
 			<version>0.20-5</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
+<!-- <dependency>
+    <groupId>org.apache.velocity</groupId>
+    <artifactId>velocity-engine-core</artifactId>
+    <version>2.0</version>
+</dependency> -->
+<!-- https://mvnrepository.com/artifact/fr.opensagres.xdocreport/fr.opensagres.xdocreport.template.velocity -->
+<dependency>
+    <groupId>fr.opensagres.xdocreport</groupId>
+    <artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+    <version>2.0.2</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-collections4</artifactId>
+    <version>4.3</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+</dependency>
+<!-- https://mvnrepository.com/artifact/oro/oro -->
+<dependency>
+    <groupId>oro</groupId>
+    <artifactId>oro</artifactId>
+    <version>2.0.8</version>
+</dependency>
+
+		 <dependency>
+    <groupId>org.apache.velocity</groupId>
+    <artifactId>velocity</artifactId>
+    <version>1.7</version>
+    </dependency> 
+<dependency>
+     <groupId>org.apache.velocity</groupId>
+     <artifactId>velocity-tools</artifactId>
+     <version>2.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/fr.opensagres.xdocreport/fr.opensagres.xdocreport.document.docx -->
+<dependency>
+    <groupId>fr.opensagres.xdocreport</groupId>
+    <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+    <version>2.0.2</version>
+</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

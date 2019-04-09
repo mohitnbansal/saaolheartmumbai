@@ -105,15 +105,25 @@ public class DashboardService {
 			logger.error("Couldnt Save Appointment for Customer" + new Date());
 		}
 		List<CustomerDetail> customerDetailList = new ArrayList<CustomerDetail>();
+		if(list.isPresent()) {
 		for(InvoiceDomain inv:list.get()) {
 			if(inv.getCustomerId() != null) {
 				try {
 			Optional<CustomerDetail> customer = customerRepo.findById(inv.getCustomerId());
-			inv.setCustomerDetail(customer.get());
+//			inv.setCustomerDetail(customer.get());
+			inv.setCustomerName(customer.get().getFirstName() + " " + customer.get().getLandlineRes());
+			inv.setMobileNo(customer.get().getMobileNo());
+				if(customer.get().getTreatmentPlanList() !=null && !customer.get().getTreatmentPlanList().isEmpty()) {
+					int size= customer.get().getTreatmentPlanList().size();
+					inv.setEnrolledFor(customer.get().getTreatmentPlanList().get(size-1).getTreatmentMaster().getTreatmentName());
+	
+				}
+			
 				}catch(Exception e) {
 					logger.error("Couldnt Save Appointment for Customer" + new Date());
 				}
 			}		
+		}
 		}
 		/*
 		 * List<CustomerDetail> customerList = list.get().stream().map(p->
@@ -233,5 +243,19 @@ try {
 				
 			}
 			return invoiceDomain.orElse(null);
+		}
+
+		public List<CustomerAppointmentDomain> getAppointmentByDateAndType(List<AppointmentType> appointmentTypeList,
+				Date dat) {
+			
+			Optional<List<CustomerAppointmentDomain>> customerAppointmentList = Optional.of(new ArrayList<CustomerAppointmentDomain>());
+			try {
+				
+				customerAppointmentList = appointmentRepo.findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTimeAfter(appointmentTypeList,"Completed",dat);
+			}
+			catch(Exception e) {
+				logger.error("Customer Appointment List unable to fetch");
+			}
+			return customerAppointmentList.orElse(null);
 		}
 }

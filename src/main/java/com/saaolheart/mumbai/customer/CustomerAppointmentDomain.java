@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,8 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 
@@ -79,7 +78,8 @@ public class CustomerAppointmentDomain  implements Serializable {
 	private Long treatmentDetailPlanId;
 	
 	@Column(name="TIME_IN_DURATION")
-	private Long timeInDuration;
+	@Convert(converter = DurationToStringConvertor.class)
+	private Duration timeInDuration;
 	
 	@Transient
 	private String customerName;
@@ -89,6 +89,7 @@ public class CustomerAppointmentDomain  implements Serializable {
 	private String typeOfAppointmentString;
 
 	@Transient
+	@Convert(converter = DurationToStringConvertor.class)
 	private Duration durationOfTreatment;
 	
 	@Column(name="MACHINE_NO")
@@ -106,24 +107,41 @@ private Date end;
 
 
 
-	public Integer getDuration() {
+
+
+
+public Duration getTimeInDuration() {
+	return timeInDuration;
+}
+
+
+
+
+public void setTimeInDuration(Duration timeInDuration) {
+	this.timeInDuration = timeInDuration;
+}
+
+
+
+
+public Integer getDuration() {
 	return duration;
 }
 
 
-public Long getTimeInDuration() {
-		return timeInDuration;
-	}
-
-
-	public void setTimeInDuration(Long timeInDuration) {
-		this.timeInDuration = timeInDuration;
-	}
 
 
 public void setDuration(Integer duration) {
 	this.duration = duration;
 }
+
+
+
+
+
+
+
+
 
 
 public Date getStart() {

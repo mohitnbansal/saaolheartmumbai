@@ -18,6 +18,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.masters.treatment.TreatmentTypeMasterDomain;
@@ -53,6 +56,7 @@ public class TreatmentPlanDomain implements Serializable{
 
 	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
 	@JoinColumn(name="TREATMENT_PLAN_ID",referencedColumnName="ID")
+	@Fetch(value=FetchMode.SELECT)
 	private List<TreatmentPlanDetailDomain> treatmentPlanDetailsList;
 	
 

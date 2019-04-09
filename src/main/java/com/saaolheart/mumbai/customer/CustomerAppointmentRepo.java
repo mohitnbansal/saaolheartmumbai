@@ -1,5 +1,6 @@
 package com.saaolheart.mumbai.customer;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,9 @@ public interface CustomerAppointmentRepo extends JpaRepository<CustomerAppointme
 	Optional<List<CustomerAppointmentDomain>> findByIsVisitDoneIgnoreCaseAndTypeOfAppointmentIn(String isVisitDone, List<AppointmentType> appointmentList);
 
 	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentIn(List<AppointmentType> appointmentType);
+
+
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTimeAfter(
+			List<AppointmentType> appointmentTypeList, String string, Date dat);
+
 }

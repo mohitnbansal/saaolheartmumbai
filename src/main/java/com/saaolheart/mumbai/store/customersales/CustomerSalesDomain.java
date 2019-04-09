@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
@@ -33,8 +37,9 @@ public class CustomerSalesDomain implements Serializable{
 	private Long id;
 	
 	
-	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true)
+	@OneToMany(cascade= {CascadeType.ALL},orphanRemoval=true,fetch = FetchType.EAGER)
 	@JoinColumn(referencedColumnName="ID",name="CUSTOMER_SALES_ID")
+	@Fetch(value=FetchMode.SELECT)
 	private List<CustomerPurchasesDomain> customerPurchasesList;
 	
 	@OneToOne(cascade= {CascadeType.ALL},orphanRemoval=true)
@@ -71,9 +76,20 @@ public class CustomerSalesDomain implements Serializable{
 	@Transient
 	private String customerName;
 	
+	@Transient
+	private CustomerDetail customerDetails;
 	
 	
 	
+	
+
+	public CustomerDetail getCustomerDetails() {
+		return customerDetails;
+	}
+
+	public void setCustomerDetails(CustomerDetail customerDetails) {
+		this.customerDetails = customerDetails;
+	}
 
 	public String getCustomerName() {
 		return customerName;

@@ -105,9 +105,55 @@ public class InvoiceDomain  implements Serializable{
 	@Transient
 	private CustomerDetail customerDetails;
 	
+	@Transient
+	private String customerName;
+	
+	
+	@Transient
+	private String gender;
+	
+	@Transient
+	private Long mobileNo;
+	
+	@Transient
+	private String enrolledFor;
 		
 	
 	
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	
+
+	public Long getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(Long mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+
+	public String getEnrolledFor() {
+		return enrolledFor;
+	}
+
+	public void setEnrolledFor(String enrolledFor) {
+		this.enrolledFor = enrolledFor;
+	}
+
 	public Date getCreatedDate() {
 		return createdDate;
 	}

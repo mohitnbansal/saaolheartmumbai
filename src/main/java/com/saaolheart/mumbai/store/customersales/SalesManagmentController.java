@@ -1,7 +1,10 @@
 package com.saaolheart.mumbai.store.customersales;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,11 +17,13 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -64,7 +69,8 @@ public class SalesManagmentController {
 	@Autowired
 	private CustomerService customerService;
 	
-	
+	@Autowired
+	private Environment env;
 	/**
 	 * Method for Adding New Customers/patients
 	 * 
@@ -107,8 +113,9 @@ public class SalesManagmentController {
 		 * Setting and Updating of Stock value
 		 * 
 		 */
-		customerService.saveCustomer(customerDb);
-		
+		CustomerDetail customerSavedDb = 	customerService.saveCustomer(customerDb);
+		int siz = customerSavedDb.getCustomerSalesList().size();
+		customerSales = 	customerSavedDb.getCustomerSalesList().get(siz-1);
 		for(CustomerPurchasesDomain purchase:customerSales.getCustomerPurchasesList()) {
 			StockDomain stock = stockService.findStockById(purchase.getStockDomainId());
 			Long stockAvailable = stock.getQtyOfStockAvailable() - purchase.getQuantityPurchased();
@@ -155,7 +162,7 @@ public class SalesManagmentController {
 		
 		errMsg.add("Succesfully Created Sales/Invoice Record");
 		actionResponse.setError(errMsg);
-//		actionResponse.setDocument(document);
+		actionResponse.setDocument(customerSales);
 		}else {
 			/**
 			 * ERROR Message to display No sales List
@@ -270,33 +277,46 @@ public class SalesManagmentController {
 	}
 	
 	
-	@GetMapping(value="/printRecipt")
-	public ResponseEntity<Resource> printRecipt() throws IOException, XDocReportException, Docx4JException {
+	@PostMapping(value="/printRecipt")
+	public ResponseEntity<Resource> printRecipt(@RequestBody CustomerSalesDomain customerSales,HttpServletRequest request,Principal user,
+			HttpServletResponse response) throws IOException  {
+		CustomerSalesDomain salesFromDb = null;
+		if(customerSales!=null) {
+			 salesFromDb = salesMgmtService.findCustomerSaledById(customerSales.getId());
+			CustomerDetail customerDetails = customerService.findCustomerDetailById(customerSales.getCustomerId());
+			salesFromDb.setCustomerDetails(customerDetails);
+		}
 		
-		  
 //
-		 String templatePath = "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/ThankYouNote_Template.docx";
+		 String templatePath = 	env.getProperty("spring.excel.invoice.path");
 		  
 		  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
-		  nonImageVariableMap.put("thank_you_date", "24-June-2013");
-		  nonImageVariableMap.put("name", "Rajani Jha");
-		  nonImageVariableMap.put("website", "www.sambhashanam.com");
-		  nonImageVariableMap.put("author_name", "Dhananjay Jha"); Map<String, String>
-		  imageVariablesWithPathMap =new HashMap<String, String>();
-		  imageVariablesWithPathMap.put("header_image_logo","/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
+		  nonImageVariableMap.put("customerSales", salesFromDb);
+ Map<String, String>  imageVariablesWithPathMap =new HashMap<String, String>();
+//		  imageVariablesWithPathMap.put("header_image_logo","/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
 		  
-		  byte[] mergedOutput =  PdfGenerator.mergeAndGeneratePDFOutput(templatePath, TemplateEngineKind.Velocity, nonImageVariableMap, imageVariablesWithPathMap); 
-//		  FileOutputStream os = new FileOutputStream("/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/"+System.nanoTime()+".pdf");
-//		  os.write(mergedOutput);
+		  byte[] mergedOutput =null;
+		try {
+			mergedOutput = PdfGenerator.mergeAndGeneratePDFOutput(templatePath, TemplateEngineKind.Velocity, nonImageVariableMap, imageVariablesWithPathMap);
+		} catch (IOException | XDocReportException | Docx4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		  FileOutputStream os = new FileOutputStream(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
+		  os.write(mergedOutput);
 		  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
-//		  os.flush();
-//		  os.close();
+		  os.flush();
+		  os.close();
 		  
+
 		  HttpHeaders header = new HttpHeaders();
-		  header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+resource.getFile().getName());
+		  header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=");
 		  header.add("Cache-Control", "no-cache, no-store, must-revalidate");
 		  header.add("Pragma", "no-cache");
 		  header.add("Expires", "0");
+		  InputStream inputStream = new FileInputStream(new File(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf")); //load the file
+		    IOUtils.copy(inputStream, response.getOutputStream());
+		    response.flushBuffer();
 		  return ResponseEntity.ok()
                 .headers(header)
                 .contentLength(resource.getFile().length())

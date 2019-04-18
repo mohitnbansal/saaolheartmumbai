@@ -24,4 +24,7 @@ public interface CustomerAppointmentRepo extends JpaRepository<CustomerAppointme
 	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTimeAfter(
 			List<AppointmentType> appointmentTypeList, String string, Date dat);
 
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndExpectedTimeAfter(
+			List<AppointmentType> appointmentTypeList, Date dat);
+
 }

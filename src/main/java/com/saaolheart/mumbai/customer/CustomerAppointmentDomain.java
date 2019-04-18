@@ -17,6 +17,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDetailDomain;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
+
 
 @Entity
 @Table(name = "APPOINTMENT_DOMAIN")
@@ -96,7 +99,7 @@ public class CustomerAppointmentDomain  implements Serializable {
 	private Integer machineNo;
 	
 @Transient
-private Integer duration;
+private Double duration;
 
 @Transient
 private Date start;
@@ -104,8 +107,29 @@ private Date start;
 @Transient
 private Date end;
 
+@Transient
+private TreatmentPlanDetailDomain treatmentDetailDomain;
 
 
+
+
+
+
+
+
+
+
+
+public TreatmentPlanDetailDomain getTreatmentDetailDomain() {
+	return treatmentDetailDomain;
+}
+
+
+
+
+public void setTreatmentDetailDomain(TreatmentPlanDetailDomain treatmentDetailDomain) {
+	this.treatmentDetailDomain = treatmentDetailDomain;
+}
 
 
 
@@ -124,22 +148,24 @@ public void setTimeInDuration(Duration timeInDuration) {
 
 
 
-public Integer getDuration() {
+
+
+
+
+
+
+
+
+public Double getDuration() {
 	return duration;
 }
 
 
 
 
-public void setDuration(Integer duration) {
+public void setDuration(Double duration) {
 	this.duration = duration;
 }
-
-
-
-
-
-
 
 
 

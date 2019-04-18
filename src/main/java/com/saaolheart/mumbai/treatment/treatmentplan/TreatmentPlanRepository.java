@@ -11,5 +11,7 @@ import com.saaolheart.mumbai.configuration.repositoryconfig.CustomRepository;
 @Repository
 public interface TreatmentPlanRepository extends CustomRepository<TreatmentPlanDomain, Long> {
 
-	Optional<List<TreatmentPlanDomain>> findByTreatmentStatusIgnoreCaseIn(Collection<String> status);  
+	Optional<List<TreatmentPlanDomain>> findByTreatmentStatusIgnoreCaseIn(Collection<String> status);
+
+	Optional<List<TreatmentPlanDomain>> findByCustomerId(Long id);  
 }

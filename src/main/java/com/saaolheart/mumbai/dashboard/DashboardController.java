@@ -8,6 +8,7 @@ import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -82,6 +84,7 @@ public class DashboardController {
 		
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
 		Set<String> errorOrMessage = new HashSet<String>();
+		boolean isTreatmentExist = false;
 //		
 //		Date newDate = parse(appointment.getExpectedTime());
 //
@@ -139,9 +142,10 @@ public class DashboardController {
 							newTreatment.setIsTreatmentDone(Constants.PENDING);
 							newTreatment.setTreatmentScheduledDate(appointment.getExpectedTime());
 							newTreatment.setMachineNo(appointment.getMachineNo());
+							newTreatment.setTreatmentType(appointment.getTypeOfAppointmentString());
 							// treatment.getTreatmentPlanDetailsList().add(newTreatment);
 							treatmentDetalPlanSave = newTreatment;
-
+							isTreatmentExist = true;
 						}
 					}
 				}else {
@@ -149,6 +153,8 @@ public class DashboardController {
 					 * Else No Treatment Exist for the Customer and Hence No Schduling Can be Done
 					 */
 					errorOrMessage.add("No Treatment Plan Exists for Scheduling any sittings");
+					actionResponse.setError(errorOrMessage);
+					return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,  HttpStatus.BAD_REQUEST);
 				}
 				}
 
@@ -158,7 +164,7 @@ public class DashboardController {
 
 				}
 				case "Treatment BCA": {
-
+					if(customer.getTreatmentPlanList()!=null && !customer.getTreatmentPlanList().isEmpty()) {
 					for (TreatmentPlanDomain treatment : customer.getTreatmentPlanList()) {
 						if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.PENDING)
 								&& (treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")
@@ -168,11 +174,19 @@ public class DashboardController {
 							newTreatment.setIsTreatmentDone(Constants.PENDING);
 							newTreatment.setTreatmentPlanId(treatment.getId());
 							newTreatment.setTreatmentScheduledDate(appointment.getDateOfScheduling());
+							newTreatment.setTreatmentType(appointment.getTypeOfAppointmentString());
 							// treatment.getTreatmentPlanDetailsList().add(newTreatment);
 							treatmentDetalPlanSave = newTreatment;
 						}
 					}
-
+					}else {
+						/**
+						 * Else No Treatment Exist for the Customer and Hence No Schduling Can be Done
+						 */
+						errorOrMessage.add("No Treatment Plan Exists for Scheduling any sittings");
+						actionResponse.setError(errorOrMessage);
+						return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse,  HttpStatus.BAD_REQUEST);
+					}
 					break;
 
 				}
@@ -238,7 +252,7 @@ public class DashboardController {
 			 HttpServletResponse response) {
 
 		ActionResponse<CustomerAppointmentDomain> actionResponse = new ActionResponse<CustomerAppointmentDomain>();
-		MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
+		Set<String> mMap = new HashSet<>();
 		boolean isTreatmentModified = false;
 		TreatmentPlanDomain treatment = null;
 		if (appointment != null && appointment.getTreatmentPlanId() != null) {
@@ -250,68 +264,46 @@ public class DashboardController {
 			 * Add methods such that Treatment Plan also will be updated
 			 */
 			switch (appointment.getTypeOfAppointment().getAppointmentString()) {
-			/*
-			 * case "In House": { break;
-			 * 
-			 * } case "Dr Appointment": {
-			 * 
-			 * break;
-			 * 
-			 * }
-			 */
-			/*
-			 * case "Treatment ECP": {
-			 * 
-			 * if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.
-			 * PENDING) &&
-			 * treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("ECP")) {
-			 * Duration newDuration =
-			 * treatment.getTime().plus(appointment.getDurationOfTreatment());
-			 * treatment.setTime(newDuration);
-			 * 
-			 * for (TreatmentPlanDetailDomain newTreatment :
-			 * treatment.getTreatmentPlanDetailsList()) { if (newTreatment.getId() ==
-			 * appointment.getTreatmentDetailPlanId()) {
-			 * newTreatment.setDuration(appointment.getDurationOfTreatment());
-			 * newTreatment.setMachineNo(appointment.getMachineNo());
-			 * newTreatment.setTreatmentDate(new Date());
-			 * newTreatment.setTreatmentPlanId(treatment.getId());
-			 * newTreatment.setIsTreatmentDone(Constants.COMPLETED);
-			 * newTreatment.setComplaints(appointment.getPostScheduleDescription());
-			 * isTreatmentModified = true; } }
-			 * 
-			 * if (treatment.getNoOfSittings() ==
-			 * treatment.getTreatmentMaster().getTotalNoOfSittings()) {
-			 * treatment.setTreatmentStatus(TreatmentStatusConstants.COMPLETED); }
-			 * 
-			 * }
-			 * 
-			 * break;
-			 * 
-			 * }
-			 */
 			case "Treatment BCA": {
 				if (treatment.getTreatmentStatus().equalsIgnoreCase(TreatmentStatusConstants.PENDING)
-						&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")) {
-					Integer noOfSittings = treatment.getNoOfSittings() + 1;
-					treatment.setNoOfSittings(noOfSittings);
+						&& (treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")
+								 || treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BOTH"))) {
+					
 					for (TreatmentPlanDetailDomain newTreatment : treatment.getTreatmentPlanDetailsList()) {
 						if (newTreatment.getId() == appointment.getTreatmentDetailPlanId()) {
 							newTreatment.setTreatmentDate(new Date());
 							newTreatment.setTreatmentPlanId(treatment.getId());
+							
 							newTreatment.setComplaints(appointment.getPostScheduleDescription());
-							newTreatment.setIsTreatmentDone(Constants.COMPLETED);
+							if(appointment.getIsVisitDone().equalsIgnoreCase("Completed")) {
+								Integer noOfSittings = treatment.getNoOfSittings() != null ? treatment.getNoOfSittings() + 1 : 1; 
+								treatment.setNoOfSittings(noOfSittings);
+								newTreatment.setIsTreatmentDone(Constants.COMPLETED);
+								newTreatment.setVisitNumber(noOfSittings);
+							}else {
+								newTreatment.setIsTreatmentDone(Constants.CANCELLED);
+								newTreatment.setVisitNumber(0);
+							}
 							isTreatmentModified = true;
 						}
 					}
-					if (treatment.getNoOfSittings() == treatment.getTreatmentMaster().getTotalNoOfSittings()) {
+					if (treatment.getNoOfSittings() == treatment.getTreatmentMaster().getTotalNoOfSittings()
+							&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BCA")) {
 						treatment.setTreatmentStatus(TreatmentStatusConstants.COMPLETED);
+					}else if(treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BOTH")) {
+						if (treatment.getTime() == treatment.getTreatmentMaster().getTotalHours() &&
+								treatment.getNoOfSittings() == treatment.getTreatmentMaster().getTotalNoOfSittings()) {
+							treatment.setTreatmentStatus(TreatmentStatusConstants.COMPLETED);
+						}
+						
+						
 					}
-
+					mMap.add("User Appointment for BCA is Succesfull");
 				}
+				break;
 			}
 
-				break;
+			
 
 			}
 		}
@@ -323,15 +315,27 @@ public class DashboardController {
 		CustomerAppointmentDomain appointmentDb = dashboardService.findAppontmentDetailById(appointment.getId());
 		Integer maxCount = dashboardService.findLastVisitOfCustomerByCustomerId(appointment.getCustomerId(),
 				AppointmentType.getAppointmentType(appointment.getTypeOfAppointment().getAppointmentString()));
-		appointmentDb.setVisitNumber(maxCount + 1);
-		appointmentDb.setIsVisitDone(appointment.getIsVisitDone());
-		appointmentDb.setVisitDateAndTime(new Date());
+	
+		if(appointment.getIsVisitDone().equalsIgnoreCase("Completed")) {
+			appointmentDb.setVisitNumber(maxCount + 1);
+			appointmentDb.setIsVisitDone(Constants.COMPLETED);
+			appointmentDb.setVisitDateAndTime(new Date());
+			appointmentDb.setVisitingForDescription("Visited");
+
+		}else {
+			appointmentDb.setVisitNumber(0);
+			appointmentDb.setIsVisitDone(Constants.CANCELLED);
+			appointmentDb.setVisitingForDescription("No Show");
+
+		}
 		CustomerAppointmentDomain savedObject = dashboardService.saveAppointment(appointmentDb);
 		actionResponse.setDocument(savedObject);
 		actionResponse.setActionResponse(ActionStatus.SUCCESS);
-		mMap.add("success", "User Appointment Succesfull");
-
-		return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, mMap, HttpStatus.OK);
+		if(!isTreatmentModified) {
+			mMap.add("Appointment Marked Successfully for Customer " + appointment.getCustomerName());
+		}
+		actionResponse.setError(mMap);
+		return new ResponseEntity<ActionResponse<CustomerAppointmentDomain>>(actionResponse, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getpaymentpending")
@@ -360,6 +364,17 @@ public class DashboardController {
 		{
 			CustomerDetail customerDetail = customerService.findCustomerDetailById(appoint.getCustomerId());
 			appoint.setCustomerName(customerDetail.getFirstName() + " " + customerDetail.getLastName());
+			for(TreatmentPlanDomain treatmenPlan:customerDetail.getTreatmentPlanList()) {
+				if(treatmenPlan.getId().equals(appoint.getTreatmentPlanId())) {
+					for(TreatmentPlanDetailDomain detail:treatmenPlan.getTreatmentPlanDetailsList()) {
+						if(detail.getId().equals(appoint.getTreatmentDetailPlanId())) 
+							{
+								appoint.setTreatmentDetailDomain(detail);
+							}
+					}
+				}
+			}
+			
 		}
 		}
 		actionResponse.setDocument(appointmentList);
@@ -414,27 +429,49 @@ public class DashboardController {
 		}else {
 			dt = Duration.ofMinutes(appointment.getDuration().longValue());
 		}
+		
 		treatment.setTime(dt);
 		if(treatment.getTreatmentPlanDetailsList() != null && !treatment.getTreatmentPlanDetailsList().isEmpty()) {
 		for(TreatmentPlanDetailDomain detail:treatment.getTreatmentPlanDetailsList()) {
 			
 			if(detail.getId().equals(appointment.getTreatmentDetailPlanId())) {
+				detail.setDurationUpTillNow(dt);
 				detail.setComplaints(appointment.getPostScheduleDescription());
 				detail.setDuration(Duration.ofMinutes(appointment.getDuration().longValue()));
-				detail.setIsTreatmentDone(Constants.COMPLETED);
+				if(appointment.getIsVisitDone().equalsIgnoreCase("true")) {
+					detail.setIsTreatmentDone(Constants.COMPLETED);
+
+				}else {
+					detail.setIsTreatmentDone(Constants.CANCELLED);
+				}
 				detail.setMachineNo(appointment.getMachineNo());
 				detail.setTreatmentDate(appointment.getStart());
 				detail.setTreatmentType(AppointmentType.TREATMENT_ECP.getAppointmentString());
 			}
 		}
-		
+		if (treatment.getTime() == treatment.getTreatmentMaster().getTotalHours()
+				&& treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("ECP")) {
+			treatment.setTreatmentStatus(TreatmentStatusConstants.COMPLETED);
+		}else if(treatment.getTreatmentMaster().getTreatmentName().equalsIgnoreCase("BOTH")) {
+			if (treatment.getTime() == treatment.getTreatmentMaster().getTotalHours() &&
+					treatment.getNoOfSittings() == treatment.getTreatmentMaster().getTotalNoOfSittings()) {
+				treatment.setTreatmentStatus(TreatmentStatusConstants.COMPLETED);
+			}
+			
+			
+		}
 		dashboardService.saveTreatmentPlan(treatment);
 		CustomerAppointmentDomain appointmentDb = dashboardService.findAppontmentDetailById(appointment.getId());
 		Integer maxCount = dashboardService.findLastVisitOfCustomerByCustomerId(appointment.getCustomerId(),
 				AppointmentType.getAppointmentType(appointment.getTypeOfAppointment().getAppointmentString()));
-		appointmentDb.setVisitNumber(maxCount + 1);
-		appointmentDb.setIsVisitDone(Constants.COMPLETED);
-		appointmentDb.setVisitDateAndTime(appointment.getStart());	
+		if(appointment.getIsVisitDone().equalsIgnoreCase("true")) {
+			appointmentDb.setVisitNumber(maxCount + 1);
+			appointmentDb.setIsVisitDone(Constants.COMPLETED);
+			appointmentDb.setVisitDateAndTime(appointment.getStart());	
+		}else {
+			appointmentDb.setVisitNumber(0);
+			appointmentDb.setIsVisitDone(Constants.CANCELLED);
+		}
 		appointmentDb.setTimeInDuration(Duration.ofMinutes(appointment.getDuration().longValue()));
 		CustomerAppointmentDomain appointmentSavedDb = dashboardService.saveAppointment(appointmentDb);
 		actionResponse.setDocument(appointmentSavedDb);

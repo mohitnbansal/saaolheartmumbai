@@ -111,7 +111,7 @@ public class DashboardService {
 				try {
 			Optional<CustomerDetail> customer = customerRepo.findById(inv.getCustomerId());
 //			inv.setCustomerDetail(customer.get());
-			inv.setCustomerName(customer.get().getFirstName() + " " + customer.get().getLandlineRes());
+			inv.setCustomerName(customer.get().getFirstName() + " " + customer.get().getLastName());
 			inv.setMobileNo(customer.get().getMobileNo());
 				if(customer.get().getTreatmentPlanList() !=null && !customer.get().getTreatmentPlanList().isEmpty()) {
 					int size= customer.get().getTreatmentPlanList().size();
@@ -251,7 +251,7 @@ try {
 			Optional<List<CustomerAppointmentDomain>> customerAppointmentList = Optional.of(new ArrayList<CustomerAppointmentDomain>());
 			try {
 				
-				customerAppointmentList = appointmentRepo.findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTimeAfter(appointmentTypeList,"Completed",dat);
+				customerAppointmentList = appointmentRepo.findByTypeOfAppointmentInAndExpectedTimeAfter(appointmentTypeList,dat);
 			}
 			catch(Exception e) {
 				logger.error("Customer Appointment List unable to fetch");

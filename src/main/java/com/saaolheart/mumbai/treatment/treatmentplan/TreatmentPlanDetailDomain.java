@@ -29,18 +29,7 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	
 	@Column(name="DURATION")
 	private Duration duration;
-	
-	@Column(name="BEG_BP")
-	private String begBp;
-	
-	@Column(name="BEG_HP")
-	private String begHp;
-	
-	@Column(name="END_BP")
-	private String endBp;
-	
-	@Column(name="END_HP")
-	private String endHp;
+
 	
 	@Column(name="COMPLAINTS")
 	private String complaints;
@@ -54,6 +43,10 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	
 	@Column(name="TREATMENT_PLAN_ID")
 	private Long treatmentPlanId;
+	
+	
+	@Column(name="VISIT_NUMBER")
+	private Integer visitNumber;
 /**
  * Consider as Start date and time
  */
@@ -70,6 +63,29 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	@Column(name="TREATMENT_TYPE")
 	private String treatmentType;
 	
+	@Column(name="DURATION_TILL_NOW")
+	private Duration durationUpTillNow;
+	
+	
+	
+
+	
+	public Duration getDurationUpTillNow() {
+		return durationUpTillNow;
+	}
+
+	public void setDurationUpTillNow(Duration durationUpTillNow) {
+		this.durationUpTillNow = durationUpTillNow;
+	}
+
+	public Integer getVisitNumber() {
+		return visitNumber;
+	}
+
+	public void setVisitNumber(Integer visitNumber) {
+		this.visitNumber = visitNumber;
+	}
+
 
 	public String getTreatmentType() {
 		return treatmentType;
@@ -84,6 +100,7 @@ public class TreatmentPlanDetailDomain implements Serializable{
 	
 	
 
+	
 	public TreatmentPlanDomain getTreatmentDomain() {
 		return treatmentDomain;
 	}
@@ -142,37 +159,7 @@ public class TreatmentPlanDetailDomain implements Serializable{
 		this.duration = duration;
 	}
 
-	public String getBegBp() {
-		return begBp;
-	}	
 
-	public void setBegBp(String begBp) {
-		this.begBp = begBp;
-	}
-
-	public String getBegHp() {
-		return begHp;
-	}
-
-	public void setBegHp(String begHp) {
-		this.begHp = begHp;
-	}
-
-	public String getEndBp() {
-		return endBp;
-	}
-
-	public void setEndBp(String endBp) {
-		this.endBp = endBp;
-	}
-
-	public String getEndHp() {
-		return endHp;
-	}
-
-	public void setEndHp(String endHp) {
-		this.endHp = endHp;
-	}
 
 	public String getComplaints() {
 		return complaints;

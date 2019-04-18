@@ -92,16 +92,12 @@ public class CustomerDetail implements Serializable {
 	private String vistingFor; 
 	
 	@Column(name="AADHAR_NUMBER")
-	private Long aadharNumber;
+	private String aadharNumber;
 	
 	@Column(name="OCCUPATION")
 	private String occupation;
 	
-	@Column(name="LANDLINE_OFF")
-	private String landlineOff;
-	
-	@Column(name="LANDLINE_RES")
-	private String landlineRes;
+
 	
 
 	@Column(name="PAN_NUMBER")
@@ -142,7 +138,7 @@ public class CustomerDetail implements Serializable {
 	private List<CustomerAppointmentDomain> customerAppointmentList;
 	
 	
-	
+
 
 	public List<CustomerAppointmentDomain> getCustomerAppointmentList() {
 		return customerAppointmentList;
@@ -154,8 +150,7 @@ public class CustomerDetail implements Serializable {
 		//this.customerAppointmentList = customerAppointmentList;
 	}
 
-	@Column(name="STATUS_OF_TREATMENT")
-	private String statusOfTreatment;
+
 	
 	@Column(name="CUSTOMER_REF_ID")
 	private String customerRefId;
@@ -236,13 +231,6 @@ public class CustomerDetail implements Serializable {
 		this.treatmentPlanList = treatmentPlanList;
 	}
 
-	public String getStatusOfTreatment() {
-		return statusOfTreatment;
-	}
-
-	public void setStatusOfTreatment(String statusOfTreatment) {
-		this.statusOfTreatment = statusOfTreatment;
-	}
 
 	public Long getAge() {
 		return age;
@@ -268,21 +256,7 @@ public class CustomerDetail implements Serializable {
 		this.saaolCode = saaolCode;
 	}
 
-	public String getLandlineOff() {
-		return landlineOff;
-	}
 
-	public void setLandlineOff(String landlineOff) {
-		this.landlineOff = landlineOff;
-	}
-
-	public String getLandlineRes() {
-		return landlineRes;
-	}
-
-	public void setLandlineRes(String landlineRes) {
-		this.landlineRes = landlineRes;
-	}
 
 	public void setVistingFor(String vistingFor) {
 		this.vistingFor = vistingFor;
@@ -397,13 +371,16 @@ public class CustomerDetail implements Serializable {
 		return vistingFor;
 	}
 
-	public Long getAadharNumber() {
+	public String getAadharNumber() {
 		return aadharNumber;
 	}
 
-	public void setAadharNumber(Long aadharNumber) {
+	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
 	}
+
+	
+
 
 
 	

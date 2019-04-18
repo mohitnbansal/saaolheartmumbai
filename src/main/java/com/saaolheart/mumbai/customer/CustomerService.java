@@ -252,4 +252,16 @@ public class CustomerService {
 		}
 		return customerDe.orElse(null);
 	}
+
+	public List<TreatmentPlanDomain> findAllTreatmentByCustomerId(Long id) {
+		Optional<List<TreatmentPlanDomain>> treatmentList = Optional.of(new ArrayList<TreatmentPlanDomain>());
+		
+		try {
+			treatmentList = treatmentRepo.findByCustomerId(id);
+		}catch(Exception e) {
+			logger.error("Unable to Fetch Any Treatment Plan List for Customer with ID "+ id,e);
+		}
+		// TODO Auto-generated method stub
+		return treatmentList.orElse(null);
+	}
 }

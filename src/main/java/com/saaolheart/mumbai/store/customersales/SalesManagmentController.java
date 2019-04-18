@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,6 +46,8 @@ import com.saaolheart.mumbai.customer.CustomerService;
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
 import com.saaolheart.mumbai.invoice.InvoiceRecieptDetailDomain;
 import com.saaolheart.mumbai.invoice.InvoiceStatuses;
+import com.saaolheart.mumbai.mail.domain.MailContentDomain;
+import com.saaolheart.mumbai.mail.service.EMailService;
 import com.saaolheart.mumbai.store.stock.StockDomain;
 import com.saaolheart.mumbai.store.stock.StockHistoryDetailsDomain;
 import com.saaolheart.mumbai.store.stock.StockManagmentService;
@@ -71,6 +74,10 @@ public class SalesManagmentController {
 	
 	@Autowired
 	private Environment env;
+	
+	
+	@Autowired
+	private EMailService notificationService;
 	/**
 	 * Method for Adding New Customers/patients
 	 * 
@@ -292,7 +299,7 @@ public class SalesManagmentController {
 		  
 		  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
 		  nonImageVariableMap.put("customerSales", salesFromDb);
- Map<String, String>  imageVariablesWithPathMap =new HashMap<String, String>();
+		  Map<String, String>  imageVariablesWithPathMap =new HashMap<String, String>();
 //		  imageVariablesWithPathMap.put("header_image_logo","/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
 		  
 		  byte[] mergedOutput =null;
@@ -341,10 +348,6 @@ public class SalesManagmentController {
     }
 
 	
-	@GetMapping(value="/emailRecipt")
-	public void emailRecipt() {
-		
-	}
 	
 	private void setSalesAndInvoiceValues(CustomerSalesDomain customerSales, Principal user,
 			CustomerDetail customerDb) {
@@ -373,4 +376,58 @@ public class SalesManagmentController {
 		customerSales.setInvoiceOfPurchase(newInvoiceDomain);
 	}
 	
+
+	@PostMapping(value="/emailreciept")
+	public ResponseEntity<Resource> emailReciept(@RequestBody CustomerSalesDomain customerSales,HttpServletRequest request,Principal user,
+			HttpServletResponse response) throws IOException  {
+		CustomerSalesDomain salesFromDb = null;
+		if(customerSales!=null) {
+			 salesFromDb = salesMgmtService.findCustomerSaledById(customerSales.getId());
+			CustomerDetail customerDetails = customerService.findCustomerDetailById(customerSales.getCustomerId());
+			salesFromDb.setCustomerDetails(customerDetails);
+		}
+		
+//
+		 String templatePath = 	env.getProperty("spring.excel.invoice.path");
+		  String filePath = templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf";
+		  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
+		  nonImageVariableMap.put("customerSales", salesFromDb);
+		  Map<String, String>  imageVariablesWithPathMap =new HashMap<String, String>();
+//		  imageVariablesWithPathMap.put("header_image_logo","/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
+		  
+		  byte[] mergedOutput =null;
+		try {
+			mergedOutput = PdfGenerator.mergeAndGeneratePDFOutput(templatePath, TemplateEngineKind.Velocity, nonImageVariableMap, imageVariablesWithPathMap);
+		} catch (IOException | XDocReportException | Docx4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		  FileOutputStream os = new FileOutputStream(filePath);
+		  os.write(mergedOutput);
+		  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
+		  os.flush();
+		  os.close();
+		  
+
+		  HttpHeaders header = new HttpHeaders();
+		  header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=");
+		  header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+		  header.add("Pragma", "no-cache");
+		  header.add("Expires", "0");
+		  InputStream inputStream = new FileInputStream(new File(filePath)); //load the file
+		    IOUtils.copy(inputStream, response.getOutputStream());
+		    response.flushBuffer();
+		
+		    MailContentDomain mailDomain = new MailContentDomain();
+		    mailDomain.setSentTo(salesFromDb.getCustomerDetails().getEmailId());
+		    mailDomain.setSubject("Your Invoice For ");
+		    mailDomain.setSubject("OK");
+		    mailDomain.setFilePath(filePath);
+		    mailDomain.setMailBody("OK");
+		    notificationService.sendReciept(mailDomain);
+		return null;
+	
+	
+	}
 }

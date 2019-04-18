@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialException;
+import javax.swing.text.DefaultEditorKit.CutAction;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.slf4j.Logger;
@@ -85,7 +86,7 @@ public class CustomerController {
 	
 		List<CustomerDetail> custDb = null;
 		Set<String> newErrors = new HashSet<String>();
-		
+		CustomerDetail customerDb = null;
 		/**
 		 * User Validation from DB isUserExist
 		 */
@@ -96,7 +97,7 @@ public class CustomerController {
 			 actionResponse.setDocument(customer);
 			 return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.BAD_REQUEST);
 		 }
-		}
+		
 		customer.setGeneretedBy(user.getName());
 		customer = customerService.saveCustomer(customer);
 		if(customer!=null && customer.getId()!=null) {
@@ -107,6 +108,27 @@ public class CustomerController {
 			actionResponse.setActionResponse(ActionStatus.SUCCESS);
 			 newErrors.add("User Created Successfully in Database");
 			 
+		}
+		}else if(customer!=null && customer.getId() !=null) {
+			customerDb = customerService.findCustomerDetailById(customer.getId());
+			customerDb.setFirstName(customer.getFirstName());
+			customerDb.setMiddleName(customer.getMiddleName());
+			customerDb.setLastName(customer.getLastName());
+			customerDb.setAge(customer.getAge());
+			customerDb.setMobileNo(customer.getMobileNo());
+			customerDb.setAadharNumber(customer.getAadharNumber());
+			customerDb.setAddress(customer.getAddress());
+			customerDb.setAltMobileNo(customer.getAltMobileNo());
+			customerDb.setDob(customer.getDob());
+			customerDb.setEmailId(customer.getEmailId());
+			customerDb.setVistingFor(customer.getVistingFor());
+			customerDb.setPanNumber(customer.getPanNumber());
+			customerDb.setOccupation(customer.getOccupation());
+			customerDb.setMartialStatus(customer.getMartialStatus());
+			customerDb = customerService.saveCustomer(customerDb);
+			actionResponse.setDocument(customerDb);
+			actionResponse.setActionResponse(ActionStatus.SUCCESS);
+			 newErrors.add("User Updated Successfully in Database");
 		}
 		actionResponse.setError(newErrors);
 		return new ResponseEntity<ActionResponse<CustomerDetail>>(actionResponse,HttpStatus.OK);
@@ -158,6 +180,8 @@ public class CustomerController {
 			invoiceDetail.setBalanceAmt(doctordetails.getInvoiceTotalamt());
 			invoiceDetail.setTotalInvoiceAmt(doctordetails.getInvoiceTotalamt());
 			invoiceDetail.setInvoiceStatus(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
+			invoiceDetail.setCreatedDate(new Date());
+			invoiceDetail.setCustomerId(doctordetails.getCustomerId());
 			invoiceDetail.setInvoiceTypeId(invoiceTypeId);//need mapped in UI dynamically
 			invoiceDetail.setGeneretedByName(user.getName());
 			doctordetails.setInvoiceDomain(invoiceDetail);
@@ -192,11 +216,7 @@ public class CustomerController {
 		}
 	}
 	
-	@PostMapping(value="/updateinvoice")
-	public void updateInvoices() {
-			
-		
-	}
+	
 	
 	@PostMapping(value="/generatereciept")
 	public ResponseEntity<ActionResponse<InvoiceDomain>>  generateRecipt(/* @Valid */ 
@@ -332,7 +352,8 @@ public class CustomerController {
 			InvoiceDomain invoiceDetail = new InvoiceDomain();
 			invoiceDetail.setBalanceAmt(ctAngioDetails.getInvoiceTotalamt());
 			invoiceDetail.setTotalInvoiceAmt(ctAngioDetails.getInvoiceTotalamt());
-			
+			invoiceDetail.setCreatedDate(new Date());
+			invoiceDetail.setCustomerId(ctAngioDetails.getCustomerId());
 			invoiceDetail.setInvoiceStatus(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
 			invoiceDetail.setInvoiceTypeId(invoiceTypeId);//need mapped in UI dynamically
 			invoiceDetail.setGeneretedByName(user.getName());
@@ -484,6 +505,13 @@ public class CustomerController {
 	return  new ResponseEntity<>(customerService.findCustomerByNameOrPhone(searchParam),HttpStatus.OK);
 	}
 	
+//	@GetMapping(value="/getcustomeralltreatment/{id}")
+//	public ResponseEntity<List<TreatmentPlanDomain>> getAllTreatmentForCustomerById(@PathVariable("id") Long id,
+//			HttpServletRequest request,Principal user,
+//			HttpServletResponse response){
+//	return  new ResponseEntity<List<TreatmentPlanDomain>>(customerService.findAllTreatmentByCustomerId(id),HttpStatus.OK);
+//	}
+	
 	@PostMapping(value="/cancelInvoice")
 	public ResponseEntity<ActionResponse<CtAngioDetailsDomain>>  cancelInvoice(/* @Valid */ 
 			@RequestBody CtAngioDetailsDomain ctAngio,
@@ -521,5 +549,9 @@ public class CustomerController {
 	}
 
 
-	
+	@PostMapping(value="/updateinvoice")
+	public void updateInvoices() {
+			
+		
+	}
 }

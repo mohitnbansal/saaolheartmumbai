@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -285,7 +286,7 @@ public class SalesManagmentController {
 	
 	
 	@PostMapping(value="/printRecipt")
-	public ResponseEntity<Resource> printRecipt(@RequestBody CustomerSalesDomain customerSales,HttpServletRequest request,Principal user,
+	public ResponseEntity<ByteArrayResource> printRecipt(@RequestBody CustomerSalesDomain customerSales,HttpServletRequest request,Principal user,
 			HttpServletResponse response) throws IOException  {
 		CustomerSalesDomain salesFromDb = null;
 		if(customerSales!=null) {
@@ -309,42 +310,17 @@ public class SalesManagmentController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+		  
 		  FileOutputStream os = new FileOutputStream(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
 		  os.write(mergedOutput);
-		  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
 		  os.flush();
 		  os.close();
-		  
-
-		  HttpHeaders header = new HttpHeaders();
-		  header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=");
-		  header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-		  header.add("Pragma", "no-cache");
-		  header.add("Expires", "0");
-		  InputStream inputStream = new FileInputStream(new File(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf")); //load the file
-		    IOUtils.copy(inputStream, response.getOutputStream());
-		    response.flushBuffer();
-		  return ResponseEntity.ok()
-                .headers(header)
-                .contentLength(resource.getFile().length())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(resource);
-//		File file = new File(SERVER_LOCATION + File.separator + image + EXTENSION);
-//
-//        HttpHeaders header = new HttpHeaders();
-//        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=img.jpg");
-//        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-//        header.add("Pragma", "no-cache");
-//        header.add("Expires", "0");
-//
-//        Path path = Paths.get(file.getAbsolutePath());
-//        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-//
-//        return ResponseEntity.ok()
-//                .headers(header)
-//                .contentLength(file.length())
-//                .contentType(MediaType.parseMediaType("application/octet-stream"))
-//                .body(resource);
+		  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
+		  response.setContentType("text/pdf; charset=utf-8");
+			response.setHeader("Content-Disposition", "attachment; filename=" + salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
+			response.setHeader("filename", salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
+		  Resource resourceStream = new FileSystemResource(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf"); //load the file
+	return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
     }
 
 	

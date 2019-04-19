@@ -1,7 +1,11 @@
 package com.saaolheart.mumbai.customer;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -18,12 +22,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialException;
 import javax.swing.text.DefaultEditorKit.CutAction;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -65,6 +75,8 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 	
+	@Autowired
+	private Environment env;
 	
 	/**
 	 * Method for Adding New Customers/patients
@@ -268,27 +280,25 @@ public class CustomerController {
 	@PostMapping(value="/printreciept")
 	public ResponseEntity<ByteArrayResource> printReciept(/* @Valid */ 
 			@RequestBody InvoiceRecieptDetailDomain invoiceReciptDomain,
-			HttpServletRequest request,Principal user,
-			BindingResult result,HttpServletResponse response) throws SerialException, SQLException, IOException {
+			HttpServletRequest request,Principal user,HttpServletResponse response) throws SerialException, SQLException, IOException {
 		InvoiceDomain invoiceDomainFromDb = customerService.findInvoiceDomainById(invoiceReciptDomain.getInvoiceId());
+	CustomerDetail cust = customerService.findCustomerDetailById(invoiceDomainFromDb.getCustomerId());
+	TreatmentPlanDomain treatmentPlan = null;
+	for(TreatmentPlanDomain treat:cust.getTreatmentPlanList()) {
+		if(invoiceDomainFromDb.getId().equals(treat.getInvoiceDomain().getId())){
+			treatmentPlan = treat;
+			invoiceDomainFromDb.setTreatmentPlan(treatmentPlan);
+			break;
+		}
+	}
+	invoiceDomainFromDb.setCustomerName(cust.getFirstName() + " " + cust.getLastName());
 		byte[] mergedOutput = null;
-		  Blob blob = null;
-		 String templatePath =  "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/InvoiceTemplate_Temp.docx";
-				  
-				  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
-				  
-				  nonImageVariableMap.put("companyName", "SAAOL Heart Mumbai");
-				  nonImageVariableMap.put("balanceDue", invoiceReciptDomain.getPaymentAmount());
-				  nonImageVariableMap.put("itemDescription", invoiceDomainFromDb.getInvoiceType().getTypeName());
-				  nonImageVariableMap.put("itemQuantity",1L);
-				  nonImageVariableMap.put("itemPrice", invoiceDomainFromDb.getTotalInvoiceAmt());
-				  nonImageVariableMap.put("ItemTotal", invoiceDomainFromDb.getTotalInvoiceAmt());
-				  nonImageVariableMap.put("recieptNumber", invoiceReciptDomain.getId());
-				  nonImageVariableMap.put("recieptDate",  invoiceReciptDomain.getPaymentDate().toString());
-				  nonImageVariableMap.put("paymentMode", invoiceReciptDomain.getPaymentMode());
-				  nonImageVariableMap.put("paymentRef", invoiceDomainFromDb.getTotalInvoiceAmt());
-				  nonImageVariableMap.put("customerName", "Mohit Bansal");
-				  
+		  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
+		  nonImageVariableMap.put("invoiceReciptDomain", invoiceReciptDomain);
+		  nonImageVariableMap.put("invoiceDomainFromDb", invoiceDomainFromDb);
+		  nonImageVariableMap.put("installment", invoiceDomainFromDb.getInvoiceReciptList().size());
+
+		 String templatePath = 							env.getProperty("spring.excel.recipt.path");
 				/**
 				 * Below is the Code for Image Setting;
 				 */
@@ -307,22 +317,17 @@ public class CustomerController {
 					e.printStackTrace();
 				}
 				  
-					ByteArrayInputStream io = new ByteArrayInputStream(mergedOutput);
-					
-//					    HttpHeaders headers = new HttpHeaders();
-//					    headers.setContentType(MediaType.APPLICATION_PDF);
-//					    headers.set("Content-Disposition", "attachment/filename=invoice.pdf");	
-//					    response.getOutputStream().write(mergedOutput, 0, mergedOutput.length);
-//					    FileCopyUtils.copy(io, response.getOutputStream());
-//					    return new ResponseEntity<InputStreamResource>(new InputStreamResource(io), headers, HttpStatus.OK);
-//					    
-					ByteArrayResource resource = new ByteArrayResource(mergedOutput);
+				  FileOutputStream os = new FileOutputStream(templatePath+invoiceReciptDomain.getId()+".pdf");
+				  os.write(mergedOutput);
+				  os.flush();
+				  os.close();
+				  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
+				  response.setContentType("text/pdf; charset=utf-8");
+					response.setHeader("Content-Disposition", "attachment; filename=" + invoiceReciptDomain.getId()+".pdf");
+					response.setHeader("filename", invoiceReciptDomain.getId()+".pdf");
+				  Resource resourceStream = new FileSystemResource(templatePath+invoiceReciptDomain.getId()+".pdf"); //load the file
+			return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
 
-				      return ResponseEntity.ok()
-				            .header(HttpHeaders.CONTENT_DISPOSITION,"attachment;filename=in.pdf")
-				            .contentType(MediaType.APPLICATION_PDF)
-				            .contentLength(mergedOutput.length)
-				            .body(resource);
 	}
 	
 	

@@ -238,11 +238,11 @@ try {
 		public List<StockDomain> findStockswithLowQty(Long limit) {
 			Optional<List<StockDomain>> invoiceDomain = Optional.of(new ArrayList<StockDomain>());
 			try {
-				invoiceDomain = stockRepo.findByQtyOfStockAvailableGreaterThanEqual(limit);
+				invoiceDomain = stockRepo.findByQtyOfStockAvailableLessThanEqual(limit);
 			}catch(Exception e) {
-				
+				logger.error("Unable to find Any stock low");
 			}
-			return invoiceDomain.orElse(null);
+			return invoiceDomain.orElse(new ArrayList<StockDomain>());
 		}
 
 		public List<CustomerAppointmentDomain> getAppointmentByDateAndType(List<AppointmentType> appointmentTypeList,

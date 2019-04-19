@@ -22,4 +22,7 @@ public interface StockRepo extends JpaRepository<StockDomain,Long> {
 
 
 	public Optional<List<StockDomain>> findByStockNameIgnoreCaseLike(String searchParam);
+
+
+	public Optional<List<StockDomain>> findByQtyOfStockAvailableLessThanEqual(Long limit);
 }

@@ -23,6 +23,7 @@ import org.springframework.data.annotation.CreatedDate;
 import com.saaolheart.mumbai.customer.CustomerDetail;
 import com.saaolheart.mumbai.masters.invoice.InvoiceTypeMaster;
 import com.saaolheart.mumbai.security.domain.User;
+import com.saaolheart.mumbai.treatment.treatmentplan.TreatmentPlanDomain;
 
 /**
  * @author mohit
@@ -72,8 +73,7 @@ public class InvoiceDomain  implements Serializable{
 	
 	@Column(name="CUSTOMER_ID")
 	private Long customerId;
-	
-	
+
 	@Transient
 	private CustomerDetail customerDetail;
 	
@@ -100,6 +100,8 @@ public class InvoiceDomain  implements Serializable{
 	@Transient
 	private Double newInvoiceAmountInCaseofCancel;
 	
+	@Transient
+	private TreatmentPlanDomain treatmentPlan;
 	
 
 	@Transient
@@ -120,6 +122,14 @@ public class InvoiceDomain  implements Serializable{
 		
 	
 	
+	public TreatmentPlanDomain getTreatmentPlan() {
+		return treatmentPlan;
+	}
+
+	public void setTreatmentPlan(TreatmentPlanDomain treatmentPlan) {
+		this.treatmentPlan = treatmentPlan;
+	}
+
 	public String getCustomerName() {
 		return customerName;
 	}

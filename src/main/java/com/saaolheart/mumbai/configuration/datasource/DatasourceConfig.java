@@ -44,18 +44,19 @@ public class DatasourceConfig {
         * loc
         */
 //       dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-//       dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
-//       dataSource.setUsername( "root" );
-//       dataSource.setPassword( "root" );
-//       
+       dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+       dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
+       dataSource.setUsername( "root" );
+       dataSource.setPassword( "root" );
+       
        
        /**
         * UAT
         */
-       dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-       dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
-       dataSource.setUsername( "protechnic" );
-       dataSource.setPassword( "protechnic" );
+//       dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//       dataSource.setUrl("jdbc:mysql://localhost:3306/SAAOL_HEART_ERP");
+//       dataSource.setUsername( "protechnic" );
+//       dataSource.setPassword( "protechnic" );
        return dataSource;
     }
 	

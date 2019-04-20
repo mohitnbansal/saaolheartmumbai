@@ -3,6 +3,7 @@ package com.saaolheart.mumbai.customer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -249,27 +250,40 @@ public class CustomerController {
 			invRcpt.setPaymentAmount(invoiceDomain.getPaymentAmount());
 			invRcpt.setRecievedBy(invoiceDomain.getGeneretedByName());
 			invoiceDomainFromDb.setBalanceAmt(invoiceDomain.getBalanceAmt());
-			invoiceDomainFromDb.getInvoiceReciptList().add(invRcpt);
+			
 			/**
 			 * BUG Status is not getting 
 			 */
-			if(invoiceDomain.getBalanceAmt().equals(invRcpt.getPaymentAmount()) ) {
+			boolean doAdd = true;
+			boolean noCancelled =invoiceDomain!= null && invoiceDomain.getCancelInvoice()!=null && invoiceDomain.getCancelInvoice().equalsIgnoreCase(InvoiceStatuses.CANCELLED.getInvoiceStatuses());
+			if((invoiceDomainFromDb.getTotalInvoiceAmt().compareTo(invoiceDomain.getBalanceAmt()) == 0 )
+					&& !noCancelled) {
 				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.NOTPAID.getInvoiceStatuses());
-			}else if (invoiceDomain.getBalanceAmt().compareTo(invRcpt.getPaymentAmount()) > 0){
+				
+			}else if (invoiceDomain.getBalanceAmt() > 0D && !noCancelled){
 				
 				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.PARTIALLYPAID.getInvoiceStatuses());
-			}else if(invoiceDomain.getInvoiceStatus().equalsIgnoreCase(InvoiceStatuses.CANCELLED.getInvoiceStatuses())){	
+				
+			}else if(noCancelled){	
 				/**
 				 * LOGIC if the Invoice get cancelled	
 				 */
 				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.CANCELLED.getInvoiceStatuses());
-			}else if(invoiceDomain.getBalanceAmt() == 0D ){
+				doAdd = false;
+				
+			}else if(invoiceDomain.getBalanceAmt() == 0D && !noCancelled){
 				invoiceDomainFromDb.setInvoiceStatus(InvoiceStatuses.PAYMENTDONE.getInvoiceStatuses());
+			}
+			if(doAdd) {
+				invoiceDomainFromDb.getInvoiceReciptList().add(invRcpt);
+				errAndMsg.add("Reciept Generated Succesfully !");
+			}else {
+				errAndMsg.add("Invoice Cancelled Succesfully !");
 			}
 			newFromDb = customerService.saveinvoiceDomain(invoiceDomainFromDb);
 		}
 		
-		errAndMsg.add("Reciept Generated Succesfully !");
+		
 		actionResponse.setDocument(newFromDb);	
 		actionResponse.setError(errAndMsg);
 		return new ResponseEntity<ActionResponse<InvoiceDomain>>(actionResponse,HttpStatus.OK);
@@ -312,7 +326,10 @@ public class CustomerController {
 							TemplateEngineKind.Velocity,
 							nonImageVariableMap,
 							null);
-				} catch (IOException | XDocReportException | Docx4JException e) {
+				} catch (IOException | XDocReportException | Docx4JException  e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}catch (Exception  e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -325,13 +342,55 @@ public class CustomerController {
 				  response.setContentType("text/pdf; charset=utf-8");
 					response.setHeader("Content-Disposition", "attachment; filename=" + invoiceReciptDomain.getId()+".pdf");
 					response.setHeader("filename", invoiceReciptDomain.getId()+".pdf");
-				  Resource resourceStream = new FileSystemResource(templatePath+invoiceReciptDomain.getId()+".pdf"); //load the file
 			return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
 
 	}
 	
 	
-	
+	@GetMapping(value="/printmou")
+	public ResponseEntity<ByteArrayResource> printMou(@RequestParam("ctConsultationId") Long id,
+			HttpServletRequest request,Principal user,HttpServletResponse response) throws IOException{		
+		DoctorConsultationDomain doctorCons = customerService.findDoctorConsultationDetailsById(id);
+			CustomerDetail cust = customerService.findCustomerDetailById(doctorCons.getCustomerId());
+			
+			doctorCons.setCustomerName(cust.getFirstName() + " " + cust.getLastName());
+				byte[] mergedOutput = null;
+				  Map<String, Object> nonImageVariableMap = new HashMap<String, Object>();
+				  nonImageVariableMap.put("doctorCons", doctorCons);
+				  nonImageVariableMap.put("cust", cust);
+
+				 String templatePath = 	env.getProperty("spring.excel.mou.path");
+						/**
+						 * Below is the Code for Image Setting;
+						 */
+//						  Map<String, String>  imageVariablesWithPathMap = new HashMap<String, String>();
+//						  imageVariablesWithPathMap
+//						  .put("header_image_logo", "/home/mohit/ProtechnicWorkspace/SaaolHearts/Project/Root/saaolheartmumbai/im.png");
+						  try {
+							mergedOutput =	  PdfGenerator
+									.mergeAndGeneratePDFOutput
+									(templatePath,
+									TemplateEngineKind.Velocity,
+									nonImageVariableMap,
+									null);
+						} catch (IOException | XDocReportException | Docx4JException  e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}catch (Exception  e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						  
+						  FileOutputStream os = new FileOutputStream(templatePath+doctorCons.getId()+".pdf");
+						  os.write(mergedOutput);
+						  os.flush();
+						  os.close();
+						  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
+						  response.setContentType("text/pdf; charset=utf-8");
+							response.setHeader("Content-Disposition", "attachment; filename=" + doctorCons.getId()+".pdf");
+							response.setHeader("filename", doctorCons.getId()+".pdf");
+					return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
+}
 	/**
 	 * CT ANGIO MEthods
 	 */

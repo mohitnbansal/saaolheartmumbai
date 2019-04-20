@@ -120,8 +120,21 @@ public class InvoiceDomain  implements Serializable{
 	@Transient
 	private String enrolledFor;
 		
+	@Transient
+	private String cancelInvoice;
 	
 	
+	
+	
+
+	public String getCancelInvoice() {
+		return cancelInvoice;
+	}
+
+	public void setCancelInvoice(String cancelInvoice) {
+		this.cancelInvoice = cancelInvoice;
+	}
+
 	public TreatmentPlanDomain getTreatmentPlan() {
 		return treatmentPlan;
 	}

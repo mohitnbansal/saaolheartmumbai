@@ -285,8 +285,9 @@ public class SalesManagmentController {
 	}
 	
 	
-	@PostMapping(value="/printRecipt")
-	public ResponseEntity<ByteArrayResource> printRecipt(@RequestBody CustomerSalesDomain customerSales,HttpServletRequest request,Principal user,
+	@PostMapping(value="/printrecipt")
+	public ResponseEntity<ByteArrayResource> printRecipt(@RequestBody CustomerSalesDomain customerSales,
+			HttpServletRequest request,Principal user,
 			HttpServletResponse response) throws IOException  {
 		CustomerSalesDomain salesFromDb = null;
 		if(customerSales!=null) {
@@ -319,7 +320,6 @@ public class SalesManagmentController {
 		  response.setContentType("text/pdf; charset=utf-8");
 			response.setHeader("Content-Disposition", "attachment; filename=" + salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
 			response.setHeader("filename", salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
-		  Resource resourceStream = new FileSystemResource(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf"); //load the file
 	return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
     }
 

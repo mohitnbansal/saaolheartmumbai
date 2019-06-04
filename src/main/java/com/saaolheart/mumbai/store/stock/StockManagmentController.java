@@ -131,7 +131,7 @@ public class StockManagmentController {
 				newStockValue = stock.getCurrentRateOfStock() * newStockQty;
 				stockFromDb.setCurrentRateOfStock(stock.getCurrentRateOfStock());
 				stockFromDb.setQtyOfStockAvailable(newStockQty);
-			
+				stockFromDb.setCurentStockValue(newStockValue);
 				if(stockFromDb.getStockHistoryDetailsList() != null) {					
 					StockHistoryDetailsDomain history = new StockHistoryDetailsDomain();
 					history.setAvailableStock(newStockQty);

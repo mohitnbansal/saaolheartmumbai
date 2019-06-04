@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.TemporalType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,10 +24,17 @@ public interface CustomerAppointmentRepo extends JpaRepository<CustomerAppointme
 	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentIn(List<AppointmentType> appointmentType);
 
 
-	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTimeAfter(
-			List<AppointmentType> appointmentTypeList, String string, Date dat);
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndIsVisitDoneNotAndExpectedTime(
+			List<AppointmentType> appointmentTypeList, String string, @Temporal(TemporalType.DATE) Date  dat);
 
-	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndExpectedTimeAfter(
-			List<AppointmentType> appointmentTypeList, Date dat);
+	
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndExpectedTime(
+			List<AppointmentType> appointmentTypeList,@Temporal(TemporalType.DATE)Date dat);
+
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndExpectedTimeBetween(
+			List<AppointmentType> appointmentTypeList, @Temporal(TemporalType.DATE)Date dateStart, @Temporal(TemporalType.DATE)Date dateEnd);
+
+	Optional<List<CustomerAppointmentDomain>> findByTypeOfAppointmentInAndExpectedTimeGreaterThanEqualAndExpectedTimeLessThan(
+			List<AppointmentType> appointmentTypeList, Date dateStart, Date dateEnd);
 
 }

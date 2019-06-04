@@ -240,10 +240,26 @@
 	</dependencyManagement>
 
 	<build>
-	<finalName>saaol-heart-erp</finalName>
+	<finalName>saaolhearterp</finalName>
 		<plugins>
-	
-			<plugin>
+<!-- 	<plugin> 
+        <artifactId>maven-resources-plugin</artifactId>     
+    <executions>  
+               <execution>   
+                       <id>copy-resources</id>    
+                      <phase>validate</phase> 
+                         <goals><goal>copy-resources</goal></goals>             
+             <configuration>                                 
+  <outputDirectory>${build.directory}/classes/resources/</outputDirectory >      
+                             <resources>    
+                                         <resource>       
+                                              <directory>C:\Basics\C\pointers\saaolheartUI\www</directory> 
+                                            </resource>   
+                                 </resources>   
+                        </configuration>        
+          </execution>   
+       </executions> </plugin>-->
+			<plugin> 
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-maven-plugin</artifactId>
       <configuration>

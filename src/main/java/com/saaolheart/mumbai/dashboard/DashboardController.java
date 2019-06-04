@@ -148,7 +148,8 @@ public class DashboardController {
 							isTreatmentExist = true;
 						}
 					}
-				}else {
+				}
+				if(!isTreatmentExist) {
 					/**
 					 * Else No Treatment Exist for the Customer and Hence No Schduling Can be Done
 					 */
@@ -177,9 +178,11 @@ public class DashboardController {
 							newTreatment.setTreatmentType(appointment.getTypeOfAppointmentString());
 							// treatment.getTreatmentPlanDetailsList().add(newTreatment);
 							treatmentDetalPlanSave = newTreatment;
+							isTreatmentExist = true;
 						}
 					}
-					}else {
+					}
+					if(!isTreatmentExist) {
 						/**
 						 * Else No Treatment Exist for the Customer and Hence No Schduling Can be Done
 						 */

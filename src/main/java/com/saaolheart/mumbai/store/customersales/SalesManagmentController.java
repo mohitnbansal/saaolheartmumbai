@@ -310,16 +310,15 @@ public class SalesManagmentController {
 		} catch (IOException | XDocReportException | Docx4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		  
+		}
 		  FileOutputStream os = new FileOutputStream(templatePath+salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
 		  os.write(mergedOutput);
 		  os.flush();
 		  os.close();
 		  ByteArrayResource resource = new ByteArrayResource(mergedOutput);
 		  response.setContentType("text/pdf; charset=utf-8");
-			response.setHeader("Content-Disposition", "attachment; filename=" + salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
-			response.setHeader("filename", salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
+		  response.setHeader("Content-Disposition", "attachment; filename=" + salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
+		  response.setHeader("filename", salesFromDb.getInvoiceOfPurchase().getId()+".pdf");
 	return	new ResponseEntity<ByteArrayResource>(resource,HttpStatus.OK);
     }
 

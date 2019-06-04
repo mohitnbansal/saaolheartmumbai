@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.saaolheart.mumbai.invoice.InvoiceDomain;
@@ -39,6 +41,7 @@ public class CtAngioDetailsDomain implements Serializable{
 	private String centerName;
 	
 	@Column(name="REF_DATE")
+	@Temporal(TemporalType.DATE)
 	private Date refDate;
 	
 	@Column(name="SCAN_TEST_NAME")

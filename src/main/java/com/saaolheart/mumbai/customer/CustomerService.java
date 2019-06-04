@@ -61,6 +61,9 @@ public class CustomerService {
 	@Autowired
 	private InvoiceTypeMasterRepo invoiceTypeMaster;
 	
+	@Autowired
+	private CustConsultationSeqRepo consultationRepo;
+	
 	public List<CustomerDetail> findCustomerByPhoneNo(Long mobileNo) {
 		Optional<List<CustomerDetail>> custOption = Optional.of(new ArrayList<CustomerDetail>());
 		try {
@@ -263,5 +266,31 @@ public class CustomerService {
 		}
 		// TODO Auto-generated method stub
 		return treatmentList.orElse(null);
+	}
+	
+	public Long getConsultaionSeq() {
+		List<CustmerConsultationSeq> seqList = new ArrayList<CustmerConsultationSeq>();
+		try {
+			
+			seqList  = consultationRepo.findAll();
+			return seqList.get(0).getId();
+		}catch(Exception e) {
+			logger.error("Unable to get Consultaion Number",e);
+			return 0L;
+		}
+		
+		
+	}
+	
+	public void generateNewSeq() {
+		Long seq = getConsultaionSeq();
+		CustmerConsultationSeq newObj = new CustmerConsultationSeq();
+		newObj.setId(seq+1);
+		try {
+			consultationRepo.deleteAll();
+			consultationRepo.saveAndFlush(newObj);
+		}catch(Exception e) {
+			logger.error("Unable to Save Consultaion Number",e);
+		}
 	}
 }

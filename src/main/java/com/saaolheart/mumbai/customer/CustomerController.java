@@ -116,13 +116,20 @@ public class CustomerController {
 		if(customer!=null && customer.getId()!=null) {
 			String requestRefernceNumber = CommonUtilities.getRequestReference(customer.getId(), customer.getDateOfCreation());
 			customer.setCustomerRefId(requestRefernceNumber);
+			if(customer.getVistingFor().equalsIgnoreCase("treatment")) {
+			Long seq = 	customerService.getConsultaionSeq();
+				customer.setConsultaionNumber(seq);
+				customerService.generateNewSeq();
+				
+			}
 			customer = customerService.saveCustomer(customer);
 			actionResponse.setDocument(customer);
 			actionResponse.setActionResponse(ActionStatus.SUCCESS);
 			 newErrors.add("User Created Successfully in Database");
 			 
 		}
-		}else if(customer!=null && customer.getId() !=null) {
+		}else if(customer!=null && customer.getId() !=null)
+		{
 			customerDb = customerService.findCustomerDetailById(customer.getId());
 			customerDb.setFirstName(customer.getFirstName());
 			customerDb.setMiddleName(customer.getMiddleName());
@@ -133,11 +140,20 @@ public class CustomerController {
 			customerDb.setAddress(customer.getAddress());
 			customerDb.setAltMobileNo(customer.getAltMobileNo());
 			customerDb.setDob(customer.getDob());
+			customerDb.setGender(customer.getGender());
 			customerDb.setEmailId(customer.getEmailId());
 			customerDb.setVistingFor(customer.getVistingFor());
 			customerDb.setPanNumber(customer.getPanNumber());
 			customerDb.setOccupation(customer.getOccupation());
 			customerDb.setMartialStatus(customer.getMartialStatus());
+			if(customer.getVistingFor().equalsIgnoreCase("treatment")
+					 &&	(customerDb.getConsultaionNumber() == null
+					 || customerDb.getConsultaionNumber() == 0L))
+			{
+					Long seq = 	customerService.getConsultaionSeq();
+					customerDb.setConsultaionNumber(seq);
+					customerService.generateNewSeq();
+			}
 			customerDb = customerService.saveCustomer(customerDb);
 			actionResponse.setDocument(customerDb);
 			actionResponse.setActionResponse(ActionStatus.SUCCESS);
@@ -350,7 +366,7 @@ public class CustomerController {
 	@GetMapping(value="/printmou")
 	public ResponseEntity<ByteArrayResource> printMou(@RequestParam("ctConsultationId") Long id,
 			HttpServletRequest request,Principal user,HttpServletResponse response) throws IOException{		
-		DoctorConsultationDomain doctorCons = customerService.findDoctorConsultationDetailsById(id);
+		CtAngioDetailsDomain doctorCons = customerService.findCtAngioDetailsById(id);
 			CustomerDetail cust = customerService.findCustomerDetailById(doctorCons.getCustomerId());
 			
 			doctorCons.setCustomerName(cust.getFirstName() + " " + cust.getLastName());

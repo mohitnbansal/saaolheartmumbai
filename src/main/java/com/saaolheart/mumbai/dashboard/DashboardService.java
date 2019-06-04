@@ -1,7 +1,9 @@
 package com.saaolheart.mumbai.dashboard;
 
 import java.security.cert.PKIXRevocationChecker.Option;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -246,15 +248,21 @@ try {
 		}
 
 		public List<CustomerAppointmentDomain> getAppointmentByDateAndType(List<AppointmentType> appointmentTypeList,
-				Date dat) {
+				Date dateStart) {
 			
 			Optional<List<CustomerAppointmentDomain>> customerAppointmentList = Optional.of(new ArrayList<CustomerAppointmentDomain>());
 			try {
-				
-				customerAppointmentList = appointmentRepo.findByTypeOfAppointmentInAndExpectedTimeAfter(appointmentTypeList,dat);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dateStart);
+				cal.add(Calendar.DATE, 1);
+				SimpleDateFormat sf = new SimpleDateFormat("dd-MMM-yyyy");
+			String formataed = sf.format(cal.getTime());
+		
+			Date dateEnd = sf.parse(formataed);
+				customerAppointmentList = appointmentRepo.findByTypeOfAppointmentInAndExpectedTimeGreaterThanEqualAndExpectedTimeLessThan(appointmentTypeList,dateStart,dateEnd);
 			}
 			catch(Exception e) {
-				logger.error("Customer Appointment List unable to fetch");
+				logger.error("Customer Appointment List unable to fetch",e);
 			}
 			return customerAppointmentList.orElse(null);
 		}
